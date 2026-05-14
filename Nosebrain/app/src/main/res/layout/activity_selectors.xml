@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Выбор параметров"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="24dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Соревнование"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+        <Spinner
+            android:id="@+id/spinnerCompetition"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Категория"
+        android:layout_marginTop="16dp"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Участник"
+        android:layout_marginTop="16dp"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
+
+        <Spinner
+            android:id="@+id/spinnerParticipant"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <TextView
+        android:id="@+id/txtNoParticipants"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Нет доступных участников"
+        android:textAlignment="center"
+        android:visibility="gone"
+        android:padding="16dp"
+        android:textColor="?android:attr/textColorSecondary"/>
+
+    <Button
+        android:id="@+id/btnStartAttempt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Начать попытку"
+        android:layout_marginTop="32dp"
+        android:padding="16dp"
+        android:enabled="false" />
+
+</LinearLayout>

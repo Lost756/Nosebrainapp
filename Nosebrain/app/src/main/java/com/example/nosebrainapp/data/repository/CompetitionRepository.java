@@ -1,0 +1,46 @@
+package com.example.nosebrainapp.data.repository;
+
+import android.content.Context;
+import com.example.nosebrainapp.data.AppDatabase;
+import com.example.nosebrainapp.data.entity.*;
+import java.util.List;
+
+public class CompetitionRepository {
+    private AppDatabase db;
+
+    public CompetitionRepository(Context context) {
+        db = AppDatabase.getInstance(context);
+    }
+
+    public List<Competition> getCompetitions() {
+        return db.competitionDao().getActive();
+    }
+
+    public List<Category> getCategoriesByCompetition(int competitionId) {
+        return db.categoryDao().getByCompetition(competitionId);
+    }
+
+    public Category getCategoryById(int categoryId) {
+        return db.categoryDao().getById(categoryId);
+    }
+
+    public List<Participant> getAvailableParticipants(int competitionId) {
+        return db.participantDao().getAvailableForCompetition(competitionId);
+    }
+
+    public List<PenaltyRule> getPenaltyRulesByCategory(int categoryId) {
+        return db.penaltyRuleDao().getByCategory(categoryId);
+    }
+
+    public void saveResult(Result result) {
+        db.resultDao().insert(result);
+    }
+
+    public boolean hasResult(int participantId, int categoryId) {
+        return db.resultDao().getByParticipantAndCategory(participantId, categoryId) != null;
+    }
+
+    public List<Result> getResultsByCategory(int categoryId) {
+        return db.resultDao().getByCategory(categoryId);
+    }
+}
