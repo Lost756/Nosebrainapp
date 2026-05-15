@@ -124,7 +124,6 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Создание соревнования");
 
-        // Создаём поле ввода
         final TextInputEditText input = new TextInputEditText(this);
         input.setHint("Название соревнования");
         input.setPadding(50, 20, 50, 20);

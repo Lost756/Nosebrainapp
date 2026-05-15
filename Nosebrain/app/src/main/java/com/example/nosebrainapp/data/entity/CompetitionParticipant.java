@@ -14,6 +14,7 @@ public class CompetitionParticipant {
 
     // Пустой конструктор (обязателен для Room)
     public CompetitionParticipant() {
+        this.sortOrder = 0;
     }
 
     // Конструктор для создания связи

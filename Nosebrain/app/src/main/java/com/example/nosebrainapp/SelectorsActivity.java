@@ -6,15 +6,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.cardview.widget.CardView;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.app.AlertDialog;
 import com.example.nosebrainapp.data.entity.*;
 import com.example.nosebrainapp.data.repository.CompetitionRepository;
 import com.example.nosebrainapp.utils.Constants;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.android.material.textfield.TextInputLayout;
 import java.util.*;
 
 public class SelectorsActivity extends AppCompatActivity {
@@ -25,7 +22,7 @@ public class SelectorsActivity extends AppCompatActivity {
 
     // UI элементы для участника
     private Spinner spinnerParticipant;
-    private Button btnStartAttempt;
+    private Button btnStartAttempt, btnAddParticipant;
     private TextView txtNoParticipants, txtCompetitionInfo;
     private List<Participant> participants;
     private int selectedParticipantId = -1;
@@ -47,7 +44,6 @@ public class SelectorsActivity extends AppCompatActivity {
     private List<Category> categories;
     private Category currentCategory;
     private List<PenaltyRuleInput> penaltyRules = new ArrayList<>();
-    private int nextPenaltyIndex = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -71,6 +67,7 @@ public class SelectorsActivity extends AppCompatActivity {
 
         // Обработчики для участника
         btnStartAttempt.setOnClickListener(v -> startJudging());
+        btnAddParticipant.setOnClickListener(v -> showAddParticipantDialog());
 
         // Обработчики для категорий
         btnAddCategory.setOnClickListener(v -> showAddCategoryForm());
@@ -85,6 +82,7 @@ public class SelectorsActivity extends AppCompatActivity {
         // Участник
         spinnerParticipant = findViewById(R.id.spinnerParticipant);
         btnStartAttempt = findViewById(R.id.btnStartAttempt);
+        btnAddParticipant = findViewById(R.id.btnAddParticipant);
         txtNoParticipants = findViewById(R.id.txtNoParticipants);
         txtCompetitionInfo = findViewById(R.id.txtCompetitionInfo);
 
@@ -113,7 +111,8 @@ public class SelectorsActivity extends AppCompatActivity {
     // ==================== УПРАВЛЕНИЕ УЧАСТНИКАМИ ====================
 
     private void loadParticipants() {
-        participants = repository.getAvailableParticipants(competitionId);
+        // Получаем всех участников
+        participants = repository.getAllParticipants();
 
         if (participants == null || participants.isEmpty()) {
             spinnerParticipant.setVisibility(View.GONE);
@@ -129,11 +128,7 @@ public class SelectorsActivity extends AppCompatActivity {
                 public View getView(int position, View convertView, ViewGroup parent) {
                     TextView view = (TextView) super.getView(position, convertView, parent);
                     Participant p = participants.get(position);
-                    if (p.nickname != null && !p.nickname.isEmpty()) {
-                        view.setText(p.name + " (" + p.nickname + ")");
-                    } else {
-                        view.setText(p.name);
-                    }
+                    view.setText(p.name);
                     return view;
                 }
 
@@ -141,11 +136,7 @@ public class SelectorsActivity extends AppCompatActivity {
                 public View getDropDownView(int position, View convertView, ViewGroup parent) {
                     TextView view = (TextView) super.getDropDownView(position, convertView, parent);
                     Participant p = participants.get(position);
-                    if (p.nickname != null && !p.nickname.isEmpty()) {
-                        view.setText(p.name + " (" + p.nickname + ")");
-                    } else {
-                        view.setText(p.name);
-                    }
+                    view.setText(p.name);
                     return view;
                 }
             };
@@ -168,6 +159,58 @@ public class SelectorsActivity extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void showAddParticipantDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Добавить участника");
+
+        final TextInputEditText input = new TextInputEditText(this);
+        input.setHint("Имя участника");
+        input.setPadding(50, 20, 50, 20);
+
+        builder.setView(input);
+
+        builder.setPositiveButton("Добавить", (dialog, which) -> {
+            String name = input.getText().toString().trim();
+            if (!name.isEmpty()) {
+                addParticipant(name);
+            } else {
+                Toast.makeText(this, "Введите имя участника", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    private void addParticipant(String name) {
+        new Thread(() -> {
+            Participant participant = new Participant();
+            participant.name = name;
+
+            long id = repository.insertParticipant(participant);
+
+            // Добавляем участника в текущее соревнование
+            if (id > 0) {
+                CompetitionParticipant link = new CompetitionParticipant();
+                link.competitionId = competitionId;
+                link.participantId = (int) id;
+                link.sortOrder = participants != null ? participants.size() : 0;
+                repository.addParticipantToCompetition(link);
+            }
+
+            runOnUiThread(() -> {
+                if (id > 0) {
+                    Toast.makeText(this, "Участник \"" + name + "\" добавлен", Toast.LENGTH_SHORT).show();
+                    loadParticipants();
+                } else {
+                    Toast.makeText(this, "Ошибка при добавлении участника", Toast.LENGTH_SHORT).show();
+                }
+            });
+        }).start();
     }
 
     private void startJudging() {
@@ -321,7 +364,6 @@ public class SelectorsActivity extends AppCompatActivity {
             }
         });
 
-        // Сохраняем данные при изменении
         android.text.TextWatcher watcher = new android.text.TextWatcher() {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
@@ -411,7 +453,6 @@ public class SelectorsActivity extends AppCompatActivity {
             return;
         }
 
-        // Конвертируем в формат для БД
         List<Map<String, Object>> rulesForServer = new ArrayList<>();
         for (PenaltyRuleInput rule : validRules) {
             Map<String, Object> ruleMap = new HashMap<>();
@@ -427,7 +468,6 @@ public class SelectorsActivity extends AppCompatActivity {
 
         new Thread(() -> {
             if (currentCategory == null) {
-                // Создание новой категории
                 Category newCategory = new Category();
                 newCategory.competitionId = competitionId;
                 newCategory.name = name;
@@ -455,7 +495,6 @@ public class SelectorsActivity extends AppCompatActivity {
                     categoryFormPanel.setVisibility(View.GONE);
                 });
             } else {
-                // Обновление существующей категории
                 currentCategory.name = name;
                 currentCategory.timeLimit = timeLimit;
                 currentCategory.hidesCount = hidesCount;
@@ -509,7 +548,6 @@ public class SelectorsActivity extends AppCompatActivity {
         loadCategories();
     }
 
-    // Внутренний класс для хранения данных штрафа
     private static class PenaltyRuleInput {
         private String name;
         private String type;
