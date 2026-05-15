@@ -11,6 +11,8 @@ public interface CategoryDao {
 
     @Query("SELECT * FROM categories WHERE id = :id")
     Category getById(int id);
+    @Query("DELETE FROM categories WHERE id = :categoryId")
+    void deleteById(int categoryId);
 
     @Insert
     long insert(Category category);

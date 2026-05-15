@@ -19,7 +19,7 @@ public class DatabaseSeeder {
 
         // Создаём тестовое соревнование
         Competition competition = new Competition();
-        competition.name = "Nosework Cup 2025";
+        competition.name = "Nosework Cup 2026";
         competition.description = "Открытый кубок по ноузворку";
         competition.isActive = true;
         long competitionId = db.competitionDao().insert(competition);

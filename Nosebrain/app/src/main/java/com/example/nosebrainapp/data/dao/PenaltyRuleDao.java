@@ -8,6 +8,8 @@ import java.util.List;
 public interface PenaltyRuleDao {
     @Query("SELECT * FROM penalty_rules WHERE categoryId = :categoryId ORDER BY sequenceIndex ASC")
     List<PenaltyRule> getByCategory(int categoryId);
+    @Query("DELETE FROM penalty_rules WHERE categoryId = :categoryId")
+    void deleteByCategoryId(int categoryId);
 
     @Insert
     long insert(PenaltyRule rule);

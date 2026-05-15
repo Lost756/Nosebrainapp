@@ -1,14 +1,19 @@
 package com.example.nosebrainapp;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-import com.google.android.material.card.MaterialCardView;
+import androidx.cardview.widget.CardView;
 import com.example.nosebrainapp.data.entity.*;
 import com.example.nosebrainapp.data.repository.CompetitionRepository;
-import com.example.nosebrainapp.utils.*;
+import com.example.nosebrainapp.utils.Constants;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import java.util.*;
+import android.os.SystemClock;
 
 public class JudgeActivity extends AppCompatActivity {
 
@@ -17,10 +22,10 @@ public class JudgeActivity extends AppCompatActivity {
     private TextView timerText, timeLimitText;
     private Button btnStart, btnFound, btnStop, btnSaveResult;
     private TextView foundCountText, hidesCountText, totalPenaltyText;
-    private LinearLayout penaltiesContainer, foundTimesContainer;
-    private MaterialCardView summaryCard;
+    private LinearLayout penaltiesContainer;
+    private CardView summaryCard;
     private TextView summaryTime, summaryFound, summaryPenalty, summaryTotal;
-    private EditText judgeComment;
+    private TextInputEditText judgeComment;
 
     // Data
     private CompetitionRepository repository;
@@ -42,6 +47,8 @@ public class JudgeActivity extends AppCompatActivity {
     private int hidesCount;
     private int maxScore;
     private List<Double> foundTimes = new ArrayList<>();
+    private LinearLayout foundTimesContainer;
+    private TextView foundTimesLabel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +95,7 @@ public class JudgeActivity extends AppCompatActivity {
         totalPenaltyText = findViewById(R.id.totalPenaltyText);
         penaltiesContainer = findViewById(R.id.penaltiesContainer);
         foundTimesContainer = findViewById(R.id.foundTimesContainer);
+        foundTimesLabel = findViewById(R.id.foundTimesLabel);
         summaryCard = findViewById(R.id.summaryCard);
         summaryTime = findViewById(R.id.summaryTime);
         summaryFound = findViewById(R.id.summaryFound);
@@ -115,37 +123,46 @@ public class JudgeActivity extends AppCompatActivity {
     private void buildPenaltyCards() {
         penaltiesContainer.removeAllViews();
         penaltyCounts.clear();
+        penaltyScores.clear();
 
         for (PenaltyRule rule : penaltyRules) {
+            // Инфлейтим карточку штрафа
             View cardView = getLayoutInflater().inflate(R.layout.item_penalty_rule, penaltiesContainer, false);
 
-            TextView ruleName = cardView.findViewById(R.id.ruleName);
-            TextView ruleType = cardView.findViewById(R.id.ruleType);
-            LinearLayout flatActions = cardView.findViewById(R.id.flatActionsContainer);
+            // Находим элементы в карточке
+            TextView ruleNameView = cardView.findViewById(R.id.ruleName);
+            TextView ruleTypeView = cardView.findViewById(R.id.ruleType);
+            LinearLayout flatActionsContainer = cardView.findViewById(R.id.flatActionsContainer);
             Button progressiveButton = cardView.findViewById(R.id.progressiveButton);
-            TextView countText = cardView.findViewById(R.id.countText);
-            TextView amountText = cardView.findViewById(R.id.amountText);
+            TextView countTextView = cardView.findViewById(R.id.countText);
+            TextView amountTextView = cardView.findViewById(R.id.amountText);
 
-            ruleName.setText(rule.name);
-            ruleType.setText(rule.type.equals("flat") ? "Фиксированный" : "Прогрессивный");
+            // Устанавливаем значения
+            ruleNameView.setText(rule.name);
+            ruleTypeView.setText(rule.type.equals("flat") ? "Фиксированный" : "Прогрессивный");
 
             penaltyCounts.put(rule.id, 0);
             penaltyScores.put(rule.id, 0);
 
             if (rule.type.equals("flat")) {
-                flatActions.setVisibility(View.VISIBLE);
+                flatActionsContainer.setVisibility(View.VISIBLE);
                 List<Double> points = rule.getPoints();
                 for (double point : points) {
                     Button actionBtn = new Button(this);
                     actionBtn.setText(String.valueOf((int) point));
-                    actionBtn.setOnClickListener(v -> addFlatPenalty(rule.id, (int) point, countText, amountText));
-                    flatActions.addView(actionBtn);
+                    int finalPoint = (int) point;
+                    actionBtn.setOnClickListener(v -> addFlatPenalty(rule.id, finalPoint, countTextView, amountTextView));
+                    flatActionsContainer.addView(actionBtn);
                 }
+                progressiveButton.setVisibility(View.GONE);
             } else {
                 progressiveButton.setVisibility(View.VISIBLE);
                 List<Double> points = rule.getPoints();
-                progressiveButton.setText("+" + points.get(0).intValue());
-                progressiveButton.setOnClickListener(v -> addProgressivePenalty(rule.id, points, progressiveButton, countText, amountText));
+                if (!points.isEmpty()) {
+                    progressiveButton.setText("+" + points.get(0).intValue());
+                }
+                progressiveButton.setOnClickListener(v -> addProgressivePenalty(rule.id, points, progressiveButton, countTextView, amountTextView));
+                flatActionsContainer.setVisibility(View.GONE);
             }
 
             penaltiesContainer.addView(cardView);
@@ -153,7 +170,7 @@ public class JudgeActivity extends AppCompatActivity {
     }
 
     private void addFlatPenalty(int ruleId, int value, TextView countText, TextView amountText) {
-        if (attemptCompleted || timerHelper.isRunning() == false) return;
+        if (attemptCompleted || !timerHelper.isRunning()) return;
 
         int currentCount = penaltyCounts.getOrDefault(ruleId, 0);
         int currentAmount = penaltyScores.getOrDefault(ruleId, 0);
@@ -172,7 +189,7 @@ public class JudgeActivity extends AppCompatActivity {
     }
 
     private void addProgressivePenalty(int ruleId, List<Double> points, Button button, TextView countText, TextView amountText) {
-        if (attemptCompleted || timerHelper.isRunning() == false) return;
+        if (attemptCompleted || !timerHelper.isRunning()) return;
 
         int currentCount = penaltyCounts.getOrDefault(ruleId, 0);
         if (currentCount >= points.size()) return;
@@ -230,19 +247,22 @@ public class JudgeActivity extends AppCompatActivity {
     }
 
     private void addFoundItem() {
-        if (attemptCompleted || timerHelper.isRunning() == false) return;
+        if (attemptCompleted || !timerHelper.isRunning()) return;
 
         if (foundItems < hidesCount) {
             foundItems++;
             foundCountText.setText(foundItems + " / " + hidesCount);
             foundTimes.add(currentTime);
 
-            // Add to UI
+            // Добавляем в UI
             TextView timeView = new TextView(this);
             timeView.setText(foundItems + ". " + formatTime(currentTime));
+            timeView.setPadding(0, 4, 0, 4);
             foundTimesContainer.addView(timeView);
+            if (foundTimesLabel != null) {
+                foundTimesLabel.setVisibility(View.VISIBLE);
+            }
             foundTimesContainer.setVisibility(View.VISIBLE);
-            findViewById(R.id.foundTimesLabel).setVisibility(View.VISIBLE);
 
             if (foundItems == hidesCount) {
                 stopAttempt("found");
@@ -266,7 +286,7 @@ public class JudgeActivity extends AppCompatActivity {
         summaryFound.setText(foundItems + " / " + hidesCount);
         summaryPenalty.setText(String.valueOf(getTotalPenalty()));
 
-        int totalScore = PenaltyCalculator.calculateTotalScore(maxScore, foundItems, hidesCount, getTotalPenalty());
+        int totalScore = calculateTotalScore();
         summaryTotal.setText(String.valueOf(totalScore));
 
         String reasonText = "";
@@ -280,35 +300,95 @@ public class JudgeActivity extends AppCompatActivity {
         Toast.makeText(this, reasonText, Toast.LENGTH_SHORT).show();
     }
 
+    private int calculateTotalScore() {
+        if (foundItems < hidesCount) return 0;
+        int penalty = getTotalPenalty();
+        return Math.max(0, maxScore - penalty);
+    }
+
     private void saveResult() {
         if (resultSaved) return;
 
-        int totalScore = PenaltyCalculator.calculateTotalScore(maxScore, foundItems, hidesCount, getTotalPenalty());
+        int totalScore = calculateTotalScore();
 
-        Result result = new Result(
-                categoryId,
-                participantId,
-                participantName,
-                currentTime,
-                foundItems,
-                penaltyCounts,
-                getTotalPenalty(),
-                totalScore,
-                judgeComment.getText().toString()
-        );
+        Result result = new Result();
+        result.categoryId = categoryId;
+        result.participantId = participantId;
+        result.participantName = participantName;
+        result.time = currentTime;
+        result.foundItems = foundItems;
+        result.penaltyCountsJson = new com.google.gson.Gson().toJson(penaltyCounts);
+        result.penaltyScore = getTotalPenalty();
+        result.totalScore = totalScore;
+        result.judgeComment = judgeComment.getText() != null ? judgeComment.getText().toString() : "";
 
-        repository.saveResult(result);
-        resultSaved = true;
-
-        Toast.makeText(this, "Результат сохранён!", Toast.LENGTH_LONG).show();
-
-        // Return to selectors after 2 seconds
-        btnSaveResult.postDelayed(() -> finish(), 2000);
+        new Thread(() -> {
+            repository.saveResult(result);
+            runOnUiThread(() -> {
+                Toast.makeText(this, "Результат сохранён!", Toast.LENGTH_LONG).show();
+                resultSaved = true;
+                btnSaveResult.postDelayed(() -> finish(), 2000);
+            });
+        }).start();
     }
 
     private String formatTime(double seconds) {
         int minutes = (int) (seconds / 60);
         double secs = seconds % 60;
         return String.format(Locale.getDefault(), "%02d:%05.2f", minutes, secs);
+    }
+
+    // Timer Helper Class
+    private static class TimerHelper {
+        private Handler handler = new Handler(Looper.getMainLooper());
+        private long startTime = 0;
+        private boolean isRunning = false;
+        private double elapsedSeconds = 0;
+        private double timeLimit = 0;
+        private OnTickListener listener;
+
+        interface OnTickListener {
+            void onTick(double seconds);
+            void onTimeLimitReached();
+        }
+
+        TimerHelper(OnTickListener listener) {
+            this.listener = listener;
+        }
+
+        void start(double limit) {
+            if (isRunning) return;
+            this.timeLimit = limit;
+            startTime = SystemClock.elapsedRealtime() - (long)(elapsedSeconds * 1000);
+            isRunning = true;
+            handler.post(updateRunnable);
+        }
+
+        void stop() {
+            if (!isRunning) return;
+            isRunning = false;
+            handler.removeCallbacks(updateRunnable);
+            elapsedSeconds = (SystemClock.elapsedRealtime() - startTime) / 1000.0;
+        }
+
+        boolean isRunning() {
+            return isRunning;
+        }
+
+        private Runnable updateRunnable = new Runnable() {
+            @Override
+            public void run() {
+                if (!isRunning) return;
+                elapsedSeconds = (SystemClock.elapsedRealtime() - startTime) / 1000.0;
+                listener.onTick(elapsedSeconds);
+
+                if (elapsedSeconds >= timeLimit) {
+                    stop();
+                    listener.onTimeLimitReached();
+                    return;
+                }
+                handler.postDelayed(this, 50);
+            }
+        };
     }
 }

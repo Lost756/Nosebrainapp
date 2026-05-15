@@ -13,7 +13,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Информация об участнике -->
+        <!-- Информация об участнике и категории -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -40,7 +40,8 @@
                     android:layout_height="wrap_content"
                     android:text="Категория: "
                     android:textSize="14sp"
-                    android:layout_marginTop="8dp"/>
+                    android:layout_marginTop="8dp"
+                    android:textColor="?android:attr/textColorSecondary"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -97,7 +98,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Старт"
-                        android:layout_marginEnd="8dp" />
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.Material3.Button"/>
 
                     <Button
                         android:id="@+id/btnFound"
@@ -106,7 +108,8 @@
                         android:layout_weight="1"
                         android:text="Верно"
                         android:enabled="false"
-                        android:layout_marginEnd="8dp" />
+                        android:layout_marginEnd="8dp"
+                        style="@style/Widget.Material3.Button"/>
 
                     <Button
                         android:id="@+id/btnStop"
@@ -114,7 +117,8 @@
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:text="Стоп"
-                        android:enabled="false" />
+                        android:enabled="false"
+                        style="@style/Widget.Material3.Button.TextButton"/>
                 </LinearLayout>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
@@ -185,14 +189,17 @@
                     android:layout_height="wrap_content"
                     android:text="Время обнаружения:"
                     android:layout_marginTop="12dp"
-                    android:visibility="gone"/>
+                    android:visibility="gone"
+                    android:textSize="14sp"
+                    android:textStyle="bold"/>
 
                 <LinearLayout
                     android:id="@+id/foundTimesContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:layout_marginTop="4dp"/>
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -361,7 +368,7 @@
                     android:layout_marginTop="16dp"
                     style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
 
-                    <EditText
+                    <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/judgeComment"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -376,7 +383,8 @@
                     android:layout_height="wrap_content"
                     android:text="Сохранить результат"
                     android:layout_marginTop="16dp"
-                    android:enabled="false" />
+                    android:enabled="false"
+                    style="@style/Widget.Material3.Button"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
