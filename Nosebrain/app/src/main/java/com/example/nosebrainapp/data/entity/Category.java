@@ -30,4 +30,8 @@ public class Category {
         this.maxScore = maxScore;
         this.sortOrder = 0;
     }
+    @Override
+    public String toString() {
+        return name;  // Показываем название категории
+    }
 }

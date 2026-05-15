@@ -29,4 +29,11 @@ public class Participant {
         this.name = name;
         this.nickname = nickname;
     }
+    @Override
+    public String toString() {
+        if (nickname != null && !nickname.isEmpty()) {
+            return name + " (" + nickname + ")";  // "Анна Смирнова (Барон)"
+        }
+        return name;  // Только имя
+    }
 }

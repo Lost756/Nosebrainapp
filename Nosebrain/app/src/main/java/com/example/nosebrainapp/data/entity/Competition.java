@@ -35,5 +35,11 @@ public class Competition {
         this.startDate = startDate;
         this.endDate = endDate;
         this.isActive = true;
+
+    }
+
+    @Override
+    public String toString() {
+        return name;  // Показываем название соревнования
     }
 }
