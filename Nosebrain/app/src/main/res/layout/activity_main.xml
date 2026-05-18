@@ -6,7 +6,7 @@
     android:orientation="vertical"
     android:padding="24dp"
     android:gravity="center"
-    android:background="#f5f5f5">
+    android:background="?android:attr/colorBackground">
 
     <ImageView
         android:layout_width="100dp"
@@ -20,7 +20,8 @@
         android:text="Nosework Judge"
         android:textSize="28sp"
         android:textStyle="bold"
-        android:layout_marginBottom="32dp"/>
+        android:layout_marginBottom="32dp"
+        android:textColor="?android:attr/textColorPrimary"/>
 
     <!-- Выбор соревнования -->
     <com.google.android.material.card.MaterialCardView
@@ -41,6 +42,7 @@
                 android:text="Выберите соревнование"
                 android:textSize="16sp"
                 android:textStyle="bold"
+                android:textColor="?android:attr/textColorPrimary"
                 android:layout_marginBottom="12dp"/>
 
             <Spinner

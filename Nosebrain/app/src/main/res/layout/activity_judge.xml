@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#f5f5f5"
+    android:background="?android:attr/colorBackground"
     tools:context=".JudgeActivity">
 
     <LinearLayout
@@ -32,6 +32,8 @@
                     android:layout_height="wrap_content"
                     android:text="Участник: "
                     android:textSize="16sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorSecondary="?android:attr/textColorSecondary"
                     android:textStyle="bold"/>
 
                 <TextView
@@ -75,6 +77,8 @@
                     android:textSize="56sp"
                     android:textStyle="bold"
                     android:fontFamily="monospace"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorSecondary="?android:attr/textColorSecondary"
                     android:layout_marginVertical="16dp"/>
 
                 <TextView
@@ -141,6 +145,8 @@
                     android:layout_height="wrap_content"
                     android:text="Статус попытки"
                     android:textSize="16sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorSecondary="?android:attr/textColorSecondary"
                     android:textStyle="bold"/>
 
                 <LinearLayout
@@ -153,6 +159,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:text="Найдено закладок:"/>
 
                     <TextView
@@ -160,6 +168,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -173,6 +183,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:text="Всего закладок:"/>
 
                     <TextView
@@ -180,6 +192,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="5"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -191,6 +205,8 @@
                     android:layout_marginTop="12dp"
                     android:visibility="gone"
                     android:textSize="14sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorSecondary="?android:attr/textColorSecondary"
                     android:textStyle="bold"/>
 
                 <LinearLayout
@@ -221,6 +237,8 @@
                     android:layout_height="wrap_content"
                     android:text="Штрафы"
                     android:textSize="16sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorSecondary="?android:attr/textColorSecondary"
                     android:textStyle="bold"/>
 
                 <LinearLayout
@@ -245,6 +263,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:text="Общая сумма штрафов:"/>
 
                     <TextView
@@ -253,6 +273,8 @@
                         android:layout_height="wrap_content"
                         android:text="0"
                         android:textStyle="bold"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:textSize="18sp"/>
                 </LinearLayout>
             </LinearLayout>
@@ -278,6 +300,8 @@
                     android:layout_height="wrap_content"
                     android:text="Итоги попытки"
                     android:textSize="16sp"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:textColorSecondary="?android:attr/textColorSecondary"
                     android:textStyle="bold"/>
 
                 <LinearLayout
@@ -290,6 +314,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:text="Время:"/>
 
                     <TextView
@@ -297,6 +323,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0 сек"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -310,6 +338,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:text="Найдено закладок:"/>
 
                     <TextView
@@ -317,6 +347,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -330,6 +362,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:text="Штрафы:"/>
 
                     <TextView
@@ -337,6 +371,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:textStyle="bold"/>
                 </LinearLayout>
 
@@ -350,6 +386,8 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:text="Общий балл:"/>
 
                     <TextView
@@ -358,6 +396,8 @@
                         android:layout_height="wrap_content"
                         android:text="---"
                         android:textStyle="bold"
+                        android:textColor="?android:attr/textColorPrimary"
+                        android:textColorSecondary="?android:attr/textColorSecondary"
                         android:textSize="20sp"/>
                 </LinearLayout>
 

@@ -1,13 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!-- Основные цвета -->
+    <color name="primary">#2E7D32</color>
+    <color name="primary_dark">#1B5E20</color>
+    <color name="accent">#FFC107</color>
+    <color name="accent_dark">#FFA000</color>
+
+    <!-- Стандартные цвета -->
+    <color name="white">#FFFFFFFF</color>
+    <color name="black">#FF000000</color>
+
+    <!-- Цвета для светлой темы -->
+    <color name="background_light">#F5F5F5</color>
+    <color name="surface_light">#FFFFFFFF</color>
+    <color name="text_light">#FF000000</color>
+
+    <!-- Цвета для тёмной темы -->
+    <color name="background_dark">#121212</color>
+    <color name="surface_dark">#1E1E1E</color>
+    <color name="text_dark">#FFFFFFFF</color>
+
+    <!-- Дополнительные цвета -->
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
     <color name="teal_200">#FF03DAC5</color>
     <color name="teal_700">#FF018786</color>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
-    <color name="primary">#2E7D32</color>
-    <color name="primary_dark">#1B5E20</color>
-    <color name="accent">#FFC107</color>
 </resources>
