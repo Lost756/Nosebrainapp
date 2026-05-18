@@ -128,7 +128,11 @@ public class SelectorsActivity extends AppCompatActivity {
                 public View getView(int position, View convertView, ViewGroup parent) {
                     TextView view = (TextView) super.getView(position, convertView, parent);
                     Participant p = participants.get(position);
-                    view.setText(p.name);
+                    if (p.nickname != null && !p.nickname.isEmpty()) {
+                        view.setText(p.name + " (" + p.nickname + ")");
+                    } else {
+                        view.setText(p.name);
+                    }
                     return view;
                 }
 
@@ -136,7 +140,11 @@ public class SelectorsActivity extends AppCompatActivity {
                 public View getDropDownView(int position, View convertView, ViewGroup parent) {
                     TextView view = (TextView) super.getDropDownView(position, convertView, parent);
                     Participant p = participants.get(position);
-                    view.setText(p.name);
+                    if (p.nickname != null && !p.nickname.isEmpty()) {
+                        view.setText(p.name + " (" + p.nickname + ")");
+                    } else {
+                        view.setText(p.name);
+                    }
                     return view;
                 }
             };
@@ -165,16 +173,83 @@ public class SelectorsActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Добавить участника");
 
-        final TextInputEditText input = new TextInputEditText(this);
-        input.setHint("Имя участника");
-        input.setPadding(50, 20, 50, 20);
+        // Создаём кастомный layout для диалога
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(60, 40, 60, 20);
 
-        builder.setView(input);
+        // Имя участника (обязательное поле)
+        final TextInputEditText inputName = new TextInputEditText(this);
+        inputName.setHint("Имя участника *");
+        layout.addView(inputName);
+
+        // Кличка
+        final TextInputEditText inputNickname = new TextInputEditText(this);
+        inputNickname.setHint("Кличка");
+        layout.addView(inputNickname);
+
+        // Порода
+        final TextInputEditText inputBreed = new TextInputEditText(this);
+        inputBreed.setHint("Порода");
+        layout.addView(inputBreed);
+
+        // Пол
+        final Spinner spinnerGender = new Spinner(this);
+        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this,
+                android.R.layout.simple_spinner_item,
+                new String[]{"Не указан", "Кобель", "Сука"});
+        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerGender.setAdapter(genderAdapter);
+        TextView genderLabel = new TextView(this);
+        genderLabel.setText("Пол:");
+        genderLabel.setTextColor(getResources().getColor(android.R.color.darker_gray));
+        genderLabel.setPadding(0, 16, 0, 4);
+        layout.addView(genderLabel);
+        layout.addView(spinnerGender);
+
+        // Дата рождения
+        final TextInputEditText inputBirthDate = new TextInputEditText(this);
+        inputBirthDate.setHint("Дата рождения (ГГГГ-ММ-ДД)");
+        layout.addView(inputBirthDate);
+
+        // Номер клейма/микрочипа
+        final TextInputEditText inputMicrochip = new TextInputEditText(this);
+        inputMicrochip.setHint("Номер клейма/микрочипа");
+        layout.addView(inputMicrochip);
+
+        // Номер родословной
+        final TextInputEditText inputPedigree = new TextInputEditText(this);
+        inputPedigree.setHint("Номер родословной");
+        layout.addView(inputPedigree);
+
+        // Номер квалификационной книжки
+        final TextInputEditText inputQualification = new TextInputEditText(this);
+        inputQualification.setHint("Номер квалификационной книжки");
+        layout.addView(inputQualification);
+
+        // Имя инструктора
+        final TextInputEditText inputInstructor = new TextInputEditText(this);
+        inputInstructor.setHint("Имя инструктора");
+        layout.addView(inputInstructor);
+
+        scrollView.addView(layout);
+        builder.setView(scrollView);
 
         builder.setPositiveButton("Добавить", (dialog, which) -> {
-            String name = input.getText().toString().trim();
+            String name = inputName.getText().toString().trim();
             if (!name.isEmpty()) {
-                addParticipant(name);
+                addParticipant(
+                        name,
+                        inputNickname.getText().toString().trim(),
+                        inputBreed.getText().toString().trim(),
+                        spinnerGender.getSelectedItemPosition() > 0 ? spinnerGender.getSelectedItem().toString() : null,
+                        inputBirthDate.getText().toString().trim(),
+                        inputMicrochip.getText().toString().trim(),
+                        inputPedigree.getText().toString().trim(),
+                        inputQualification.getText().toString().trim(),
+                        inputInstructor.getText().toString().trim()
+                );
             } else {
                 Toast.makeText(this, "Введите имя участника", Toast.LENGTH_SHORT).show();
             }
@@ -186,19 +261,30 @@ public class SelectorsActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void addParticipant(String name) {
+    private void addParticipant(String name, String nickname, String breed, String gender,
+                                String birthDate, String microchipNumber, String pedigreeNumber,
+                                String qualificationBookNumber, String instructorName) {
         new Thread(() -> {
             Participant participant = new Participant();
             participant.name = name;
+            participant.nickname = nickname.isEmpty() ? null : nickname;
+            participant.breed = breed.isEmpty() ? null : breed;
+            participant.gender = gender;
+            participant.birthDate = birthDate.isEmpty() ? null : birthDate;
+            participant.microchipNumber = microchipNumber.isEmpty() ? null : microchipNumber;
+            participant.pedigreeNumber = pedigreeNumber.isEmpty() ? null : pedigreeNumber;
+            participant.qualificationBookNumber = qualificationBookNumber.isEmpty() ? null : qualificationBookNumber;
+            participant.instructorName = instructorName.isEmpty() ? null : instructorName;
 
             long id = repository.insertParticipant(participant);
 
             // Добавляем участника в текущее соревнование
             if (id > 0) {
+                List<Participant> currentParticipants = repository.getAllParticipants();
                 CompetitionParticipant link = new CompetitionParticipant();
                 link.competitionId = competitionId;
                 link.participantId = (int) id;
-                link.sortOrder = participants != null ? participants.size() : 0;
+                link.sortOrder = currentParticipants != null ? currentParticipants.size() : 0;
                 repository.addParticipantToCompetition(link);
             }
 

@@ -2,6 +2,7 @@ package com.example.nosebrainapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -15,6 +16,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "MainActivity";
     private CompetitionRepository repository;
     private Spinner spinnerCompetition;
     private Button btnStartJudging, btnViewResults, btnCreateCompetition;
@@ -27,12 +29,41 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
 
-        repository = new CompetitionRepository(this);
+        try {
+            setContentView(R.layout.activity_main);
+            Log.d(TAG, "Layout set");
+        } catch (Exception e) {
+            Log.e(TAG, "Error setting layout: " + e.getMessage(), e);
+            Toast.makeText(this, "Ошибка загрузки интерфейса", Toast.LENGTH_SHORT).show();
+            return;
+        }
 
-        initViews();
-        loadCompetitions();
+        try {
+            repository = new CompetitionRepository(this);
+            Log.d(TAG, "Repository created");
+        } catch (Exception e) {
+            Log.e(TAG, "Error creating repository: " + e.getMessage(), e);
+            Toast.makeText(this, "Ошибка инициализации базы данных", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            initViews();
+            Log.d(TAG, "Views initialized");
+        } catch (Exception e) {
+            Log.e(TAG, "Error initializing views: " + e.getMessage(), e);
+            Toast.makeText(this, "Ошибка инициализации интерфейса", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        try {
+            loadCompetitions();
+            Log.d(TAG, "Competitions loaded");
+        } catch (Exception e) {
+            Log.e(TAG, "Error loading competitions: " + e.getMessage(), e);
+            Toast.makeText(this, "Ошибка загрузки соревнований", Toast.LENGTH_SHORT).show();
+        }
 
         btnStartJudging.setOnClickListener(v -> {
             if (selectedCompetitionId != -1) {
@@ -147,21 +178,26 @@ public class MainActivity extends AppCompatActivity {
 
     private void createCompetition(String name) {
         new Thread(() -> {
-            Competition competition = new Competition();
-            competition.name = name;
-            competition.description = "";
-            competition.isActive = true;
+            try {
+                Competition competition = new Competition();
+                competition.name = name;
+                competition.description = "";
+                competition.isActive = true;
 
-            long id = repository.insertCompetition(competition);
+                long id = repository.insertCompetition(competition);
 
-            runOnUiThread(() -> {
-                if (id > 0) {
-                    Toast.makeText(MainActivity.this, "Соревнование \"" + name + "\" создано", Toast.LENGTH_SHORT).show();
-                    loadCompetitions();
-                } else {
-                    Toast.makeText(MainActivity.this, "Ошибка при создании соревнования", Toast.LENGTH_SHORT).show();
-                }
-            });
+                runOnUiThread(() -> {
+                    if (id > 0) {
+                        Toast.makeText(MainActivity.this, "Соревнование \"" + name + "\" создано", Toast.LENGTH_SHORT).show();
+                        loadCompetitions();
+                    } else {
+                        Toast.makeText(MainActivity.this, "Ошибка при создании соревнования", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            } catch (Exception e) {
+                Log.e(TAG, "Error creating competition: " + e.getMessage(), e);
+                runOnUiThread(() -> Toast.makeText(MainActivity.this, "Ошибка: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+            }
         }).start();
     }
 
