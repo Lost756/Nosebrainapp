@@ -6,10 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.app.AlertDialog;
 import com.example.nosebrainapp.data.entity.*;
 import com.example.nosebrainapp.data.repository.CompetitionRepository;
 import com.example.nosebrainapp.utils.Constants;
+import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.*;
@@ -30,20 +30,11 @@ public class SelectorsActivity extends AppCompatActivity {
 
     // UI элементы для управления категориями
     private Spinner spinnerCategory;
-    private Button btnAddCategory, btnSaveCategory, btnDeleteCategory;
-    private LinearLayout categoryFormPanel;
-    private LinearLayout penaltyRulesContainer;
-    private Button btnAddPenaltyRule;
-
-    // Поля формы категории
-    private TextInputEditText etCategoryName;
-    private TextInputEditText etTimeLimit;
-    private TextInputEditText etHidesCount;
-    private TextInputEditText etMaxScore;
+    private Button btnAddCategory, btnDeleteCategory;
+    private TextView tvCategoryInfo;
 
     private List<Category> categories;
     private Category currentCategory;
-    private List<PenaltyRuleInput> penaltyRules = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,15 +56,10 @@ public class SelectorsActivity extends AppCompatActivity {
         loadParticipants();
         loadCategories();
 
-        // Обработчики для участника
         btnStartAttempt.setOnClickListener(v -> startJudging());
-        btnAddParticipant.setOnClickListener(v -> showAddParticipantDialog());
-
-        // Обработчики для категорий
-        btnAddCategory.setOnClickListener(v -> showAddCategoryForm());
-        btnSaveCategory.setOnClickListener(v -> saveCategory());
+        btnAddParticipant.setOnClickListener(v -> showParticipantBottomSheet());
+        btnAddCategory.setOnClickListener(v -> showCategoryBottomSheet(null));
         btnDeleteCategory.setOnClickListener(v -> deleteCategory());
-        btnAddPenaltyRule.setOnClickListener(v -> addPenaltyRuleRow(null));
     }
 
     private void initViews() {
@@ -92,26 +78,15 @@ public class SelectorsActivity extends AppCompatActivity {
         // Категории
         spinnerCategory = findViewById(R.id.spinnerCategory);
         btnAddCategory = findViewById(R.id.btnAddCategory);
-        btnSaveCategory = findViewById(R.id.btnSaveCategory);
         btnDeleteCategory = findViewById(R.id.btnDeleteCategory);
-        categoryFormPanel = findViewById(R.id.categoryFormPanel);
-        penaltyRulesContainer = findViewById(R.id.penaltyRulesContainer);
-        btnAddPenaltyRule = findViewById(R.id.btnAddPenaltyRule);
+        tvCategoryInfo = findViewById(R.id.tvCategoryInfo);
 
-        etCategoryName = findViewById(R.id.etCategoryName);
-        etTimeLimit = findViewById(R.id.etTimeLimit);
-        etHidesCount = findViewById(R.id.etHidesCount);
-        etMaxScore = findViewById(R.id.etMaxScore);
-
-        // Скрываем форму при загрузке
-        categoryFormPanel.setVisibility(View.GONE);
         btnDeleteCategory.setEnabled(false);
     }
 
     // ==================== УПРАВЛЕНИЕ УЧАСТНИКАМИ ====================
 
     private void loadParticipants() {
-        // Получаем всех участников
         participants = repository.getAllParticipants();
 
         if (participants == null || participants.isEmpty()) {
@@ -169,101 +144,55 @@ public class SelectorsActivity extends AppCompatActivity {
         }
     }
 
-    private void showAddParticipantDialog() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setTitle("Добавить участника");
+    private void showParticipantBottomSheet() {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        View sheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_participant, null);
+        bottomSheetDialog.setContentView(sheetView);
 
-        // Создаём кастомный layout для диалога
-        ScrollView scrollView = new ScrollView(this);
-        LinearLayout layout = new LinearLayout(this);
-        layout.setOrientation(LinearLayout.VERTICAL);
-        layout.setPadding(60, 40, 60, 20);
+        TextInputEditText etName = sheetView.findViewById(R.id.etParticipantName);
+        TextInputEditText etNickname = sheetView.findViewById(R.id.etParticipantNickname);
+        TextInputEditText etBreed = sheetView.findViewById(R.id.etParticipantBreed);
+        Spinner spinnerGender = sheetView.findViewById(R.id.spinnerGender);
+        TextInputEditText etBirthDate = sheetView.findViewById(R.id.etParticipantBirthDate);
+        TextInputEditText etMicrochip = sheetView.findViewById(R.id.etParticipantMicrochip);
+        TextInputEditText etPedigree = sheetView.findViewById(R.id.etParticipantPedigree);
+        TextInputEditText etQualification = sheetView.findViewById(R.id.etParticipantQualification);
+        TextInputEditText etInstructor = sheetView.findViewById(R.id.etParticipantInstructor);
+        Button btnCancel = sheetView.findViewById(R.id.btnCancelParticipant);
+        Button btnSave = sheetView.findViewById(R.id.btnSaveParticipant);
 
-        // Имя участника (обязательное поле)
-        final TextInputEditText inputName = new TextInputEditText(this);
-        inputName.setHint("Имя участника *");
-        layout.addView(inputName);
+        btnCancel.setOnClickListener(v -> bottomSheetDialog.dismiss());
 
-        // Кличка
-        final TextInputEditText inputNickname = new TextInputEditText(this);
-        inputNickname.setHint("Кличка");
-        layout.addView(inputNickname);
-
-        // Порода
-        final TextInputEditText inputBreed = new TextInputEditText(this);
-        inputBreed.setHint("Порода");
-        layout.addView(inputBreed);
-
-        // Пол
-        final Spinner spinnerGender = new Spinner(this);
-        ArrayAdapter<String> genderAdapter = new ArrayAdapter<>(this,
-                android.R.layout.simple_spinner_item,
-                new String[]{"Не указан", "Кобель", "Сука"});
-        genderAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerGender.setAdapter(genderAdapter);
-        TextView genderLabel = new TextView(this);
-        genderLabel.setText("Пол:");
-        genderLabel.setTextColor(getResources().getColor(android.R.color.darker_gray));
-        genderLabel.setPadding(0, 16, 0, 4);
-        layout.addView(genderLabel);
-        layout.addView(spinnerGender);
-
-        // Дата рождения
-        final TextInputEditText inputBirthDate = new TextInputEditText(this);
-        inputBirthDate.setHint("Дата рождения (ГГГГ-ММ-ДД)");
-        layout.addView(inputBirthDate);
-
-        // Номер клейма/микрочипа
-        final TextInputEditText inputMicrochip = new TextInputEditText(this);
-        inputMicrochip.setHint("Номер клейма/микрочипа");
-        layout.addView(inputMicrochip);
-
-        // Номер родословной
-        final TextInputEditText inputPedigree = new TextInputEditText(this);
-        inputPedigree.setHint("Номер родословной");
-        layout.addView(inputPedigree);
-
-        // Номер квалификационной книжки
-        final TextInputEditText inputQualification = new TextInputEditText(this);
-        inputQualification.setHint("Номер квалификационной книжки");
-        layout.addView(inputQualification);
-
-        // Имя инструктора
-        final TextInputEditText inputInstructor = new TextInputEditText(this);
-        inputInstructor.setHint("Имя инструктора");
-        layout.addView(inputInstructor);
-
-        scrollView.addView(layout);
-        builder.setView(scrollView);
-
-        builder.setPositiveButton("Добавить", (dialog, which) -> {
-            String name = inputName.getText().toString().trim();
-            if (!name.isEmpty()) {
-                addParticipant(
-                        name,
-                        inputNickname.getText().toString().trim(),
-                        inputBreed.getText().toString().trim(),
-                        spinnerGender.getSelectedItemPosition() > 0 ? spinnerGender.getSelectedItem().toString() : null,
-                        inputBirthDate.getText().toString().trim(),
-                        inputMicrochip.getText().toString().trim(),
-                        inputPedigree.getText().toString().trim(),
-                        inputQualification.getText().toString().trim(),
-                        inputInstructor.getText().toString().trim()
-                );
-            } else {
+        btnSave.setOnClickListener(v -> {
+            String name = etName.getText().toString().trim();
+            if (name.isEmpty()) {
                 Toast.makeText(this, "Введите имя участника", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            String gender = spinnerGender.getSelectedItemPosition() > 0 ? spinnerGender.getSelectedItem().toString() : null;
+
+            addParticipant(
+                    name,
+                    etNickname.getText().toString().trim(),
+                    etBreed.getText().toString().trim(),
+                    gender,
+                    etBirthDate.getText().toString().trim(),
+                    etMicrochip.getText().toString().trim(),
+                    etPedigree.getText().toString().trim(),
+                    etQualification.getText().toString().trim(),
+                    etInstructor.getText().toString().trim(),
+                    bottomSheetDialog
+            );
         });
 
-        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.dismiss());
-
-        AlertDialog dialog = builder.create();
-        dialog.show();
+        bottomSheetDialog.show();
     }
 
     private void addParticipant(String name, String nickname, String breed, String gender,
                                 String birthDate, String microchipNumber, String pedigreeNumber,
-                                String qualificationBookNumber, String instructorName) {
+                                String qualificationBookNumber, String instructorName,
+                                BottomSheetDialog dialog) {
         new Thread(() -> {
             Participant participant = new Participant();
             participant.name = name;
@@ -278,7 +207,6 @@ public class SelectorsActivity extends AppCompatActivity {
 
             long id = repository.insertParticipant(participant);
 
-            // Добавляем участника в текущее соревнование
             if (id > 0) {
                 List<Participant> currentParticipants = repository.getAllParticipants();
                 CompetitionParticipant link = new CompetitionParticipant();
@@ -292,6 +220,7 @@ public class SelectorsActivity extends AppCompatActivity {
                 if (id > 0) {
                     Toast.makeText(this, "Участник \"" + name + "\" добавлен", Toast.LENGTH_SHORT).show();
                     loadParticipants();
+                    dialog.dismiss();
                 } else {
                     Toast.makeText(this, "Ошибка при добавлении участника", Toast.LENGTH_SHORT).show();
                 }
@@ -305,7 +234,6 @@ public class SelectorsActivity extends AppCompatActivity {
             return;
         }
 
-        // Показываем диалог выбора категории
         String[] categoryNames = new String[categories.size()];
         for (int i = 0; i < categories.size(); i++) {
             categoryNames[i] = categories.get(i).name;
@@ -330,13 +258,13 @@ public class SelectorsActivity extends AppCompatActivity {
         categories = repository.getCategoriesByCompetition(competitionId);
 
         if (categories == null || categories.isEmpty()) {
-            ArrayAdapter<String> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item,
-                    Collections.singletonList("-- Нет категорий --"));
-            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinnerCategory.setAdapter(adapter);
+            spinnerCategory.setVisibility(View.GONE);
             btnDeleteCategory.setEnabled(false);
+            tvCategoryInfo.setText("Нет категорий. Нажмите кнопку \"Создать категорию\"");
         } else {
+            spinnerCategory.setVisibility(View.VISIBLE);
+            tvCategoryInfo.setText("Выберите категорию для просмотра:");
+
             ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(this,
                     android.R.layout.simple_spinner_item, categories) {
                 @Override
@@ -361,81 +289,141 @@ public class SelectorsActivity extends AppCompatActivity {
                 public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                     if (position >= 0 && position < categories.size()) {
                         currentCategory = categories.get(position);
-                        loadCategoryForEdit(currentCategory);
-                        categoryFormPanel.setVisibility(View.VISIBLE);
+                        displayCategoryInfo(currentCategory);
                         btnDeleteCategory.setEnabled(true);
                     }
                 }
 
                 @Override
                 public void onNothingSelected(AdapterView<?> parent) {
-                    categoryFormPanel.setVisibility(View.GONE);
                     btnDeleteCategory.setEnabled(false);
                 }
             });
 
             if (!categories.isEmpty()) {
                 currentCategory = categories.get(0);
-                loadCategoryForEdit(currentCategory);
-                categoryFormPanel.setVisibility(View.VISIBLE);
+                displayCategoryInfo(currentCategory);
                 btnDeleteCategory.setEnabled(true);
             }
         }
     }
 
-    private void loadCategoryForEdit(Category category) {
-        etCategoryName.setText(category.name);
-        etTimeLimit.setText(String.valueOf(category.timeLimit));
-        etHidesCount.setText(String.valueOf(category.hidesCount));
-        etMaxScore.setText(String.valueOf(category.maxScore));
+    private void displayCategoryInfo(Category category) {
+        StringBuilder info = new StringBuilder();
+        info.append("Название: ").append(category.name).append("\n");
+        info.append("Лимит времени: ").append(category.timeLimit).append(" сек\n");
+        info.append("Закладок: ").append(category.hidesCount).append("\n");
+        info.append("Макс. балл: ").append(category.maxScore).append("\n\n");
+        info.append("Штрафы:\n");
 
         List<PenaltyRule> rules = repository.getPenaltyRulesByCategory(category.id);
-        penaltyRules.clear();
-        penaltyRulesContainer.removeAllViews();
-
-        for (PenaltyRule rule : rules) {
-            List<Integer> points = new ArrayList<>();
-            for (double p : rule.getPoints()) {
-                points.add((int) p);
+        if (rules.isEmpty()) {
+            info.append("  - Нет штрафов");
+        } else {
+            for (PenaltyRule rule : rules) {
+                info.append("  • ").append(rule.name).append(" (")
+                        .append(rule.type.equals("flat") ? "фиксированный" : "прогрессивный")
+                        .append("): ");
+                List<Double> points = rule.getPoints();
+                for (int i = 0; i < points.size(); i++) {
+                    if (i > 0) info.append(", ");
+                    info.append(points.get(i).intValue());
+                }
+                info.append("\n");
             }
-            PenaltyRuleInput ruleInput = new PenaltyRuleInput(rule.name, rule.type, points);
-            penaltyRules.add(ruleInput);
-            addPenaltyRuleRow(ruleInput);
         }
 
-        if (penaltyRules.isEmpty()) {
-            addPenaltyRuleRow(null);
-        }
+        tvCategoryInfo.setText(info.toString());
     }
 
-    private void showAddCategoryForm() {
-        currentCategory = null;
-        etCategoryName.setText("");
-        etTimeLimit.setText("120");
-        etHidesCount.setText("5");
-        etMaxScore.setText("100");
+    private void showCategoryBottomSheet(Category categoryToEdit) {
+        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
+        View sheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_category, null);
+        bottomSheetDialog.setContentView(sheetView);
 
-        penaltyRules.clear();
-        penaltyRulesContainer.removeAllViews();
-        addPenaltyRuleRow(null);
+        TextInputEditText etName = sheetView.findViewById(R.id.etCategoryName);
+        TextInputEditText etTimeLimit = sheetView.findViewById(R.id.etTimeLimit);
+        TextInputEditText etHidesCount = sheetView.findViewById(R.id.etHidesCount);
+        TextInputEditText etMaxScore = sheetView.findViewById(R.id.etMaxScore);
+        LinearLayout penaltiesContainer = sheetView.findViewById(R.id.penaltyRulesContainer);
+        Button btnAddPenaltyRule = sheetView.findViewById(R.id.btnAddPenaltyRule);
+        Button btnCancel = sheetView.findViewById(R.id.btnCancelCategory);
+        Button btnSave = sheetView.findViewById(R.id.btnSaveCategory);
 
-        categoryFormPanel.setVisibility(View.VISIBLE);
-        btnDeleteCategory.setEnabled(false);
+        List<PenaltyRuleInput> penaltyRulesList = new ArrayList<>();
 
-        if (categories != null && !categories.isEmpty()) {
-            spinnerCategory.setSelection(0);
+        if (categoryToEdit != null) {
+            etName.setText(categoryToEdit.name);
+            etTimeLimit.setText(String.valueOf(categoryToEdit.timeLimit));
+            etHidesCount.setText(String.valueOf(categoryToEdit.hidesCount));
+            etMaxScore.setText(String.valueOf(categoryToEdit.maxScore));
+
+            List<PenaltyRule> rules = repository.getPenaltyRulesByCategory(categoryToEdit.id);
+            for (PenaltyRule rule : rules) {
+                List<Integer> points = new ArrayList<>();
+                for (double p : rule.getPoints()) {
+                    points.add((int) p);
+                }
+                PenaltyRuleInput input = new PenaltyRuleInput(rule.name, rule.type, points);
+                penaltyRulesList.add(input);
+                addPenaltyRuleRow(penaltiesContainer, penaltyRulesList, input);
+            }
         }
+
+        if (penaltyRulesList.isEmpty()) {
+            addPenaltyRuleRow(penaltiesContainer, penaltyRulesList, null);
+        }
+
+        btnAddPenaltyRule.setOnClickListener(v ->
+                addPenaltyRuleRow(penaltiesContainer, penaltyRulesList, null));
+
+        btnCancel.setOnClickListener(v -> bottomSheetDialog.dismiss());
+
+        btnSave.setOnClickListener(v -> {
+            String name = etName.getText().toString().trim();
+            String timeLimitStr = etTimeLimit.getText().toString().trim();
+            String hidesCountStr = etHidesCount.getText().toString().trim();
+            String maxScoreStr = etMaxScore.getText().toString().trim();
+
+            if (name.isEmpty()) {
+                Toast.makeText(this, "Введите название категории", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            double timeLimit;
+            int hidesCount, maxScore;
+            try {
+                timeLimit = Double.parseDouble(timeLimitStr);
+                hidesCount = Integer.parseInt(hidesCountStr);
+                maxScore = Integer.parseInt(maxScoreStr);
+            } catch (NumberFormatException e) {
+                Toast.makeText(this, "Проверьте числовые поля", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            List<PenaltyRuleInput> validRules = new ArrayList<>();
+            for (PenaltyRuleInput rule : penaltyRulesList) {
+                if (rule.getName() != null && !rule.getName().isEmpty() &&
+                        rule.getPoints() != null && !rule.getPoints().isEmpty()) {
+                    validRules.add(rule);
+                }
+            }
+
+            saveCategory(categoryToEdit, name, timeLimit, hidesCount, maxScore, validRules, bottomSheetDialog);
+        });
+
+        bottomSheetDialog.show();
     }
 
-    private void addPenaltyRuleRow(PenaltyRuleInput existingRule) {
-        View row = getLayoutInflater().inflate(R.layout.item_penalty_rule_input, penaltyRulesContainer, false);
+    private void addPenaltyRuleRow(LinearLayout container, List<PenaltyRuleInput> rulesList, PenaltyRuleInput existingRule) {
+        View row = getLayoutInflater().inflate(R.layout.item_penalty_rule_input, container, false);
 
         TextInputEditText etRuleName = row.findViewById(R.id.etRuleName);
         Spinner spinnerRuleType = row.findViewById(R.id.spinnerRuleType);
         TextInputEditText etRulePoints = row.findViewById(R.id.etRulePoints);
         MaterialButton btnRemoveRule = row.findViewById(R.id.btnRemoveRule);
 
-        final int position = penaltyRulesContainer.getChildCount();
+        final int position = container.getChildCount();
 
         if (existingRule != null) {
             etRuleName.setText(existingRule.getName());
@@ -444,9 +432,9 @@ public class SelectorsActivity extends AppCompatActivity {
         }
 
         btnRemoveRule.setOnClickListener(v -> {
-            penaltyRulesContainer.removeView(row);
-            if (penaltyRulesContainer.getChildCount() == 0) {
-                addPenaltyRuleRow(null);
+            container.removeView(row);
+            if (position < rulesList.size()) {
+                rulesList.remove(position);
             }
         });
 
@@ -454,7 +442,7 @@ public class SelectorsActivity extends AppCompatActivity {
             @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
             @Override public void onTextChanged(CharSequence s, int start, int before, int count) {}
             @Override public void afterTextChanged(android.text.Editable s) {
-                updatePenaltyRuleAtPosition(position, etRuleName.getText().toString(),
+                updatePenaltyRuleInList(rulesList, position, etRuleName.getText().toString(),
                         spinnerRuleType.getSelectedItemPosition(), etRulePoints.getText().toString());
             }
         };
@@ -465,22 +453,22 @@ public class SelectorsActivity extends AppCompatActivity {
         spinnerRuleType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int pos, long id) {
-                updatePenaltyRuleAtPosition(position, etRuleName.getText().toString(),
+                updatePenaltyRuleInList(rulesList, position, etRuleName.getText().toString(),
                         pos, etRulePoints.getText().toString());
             }
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        penaltyRulesContainer.addView(row);
+        container.addView(row);
     }
 
-    private void updatePenaltyRuleAtPosition(int position, String name, int typePosition, String pointsStr) {
-        while (penaltyRules.size() <= position) {
-            penaltyRules.add(new PenaltyRuleInput());
+    private void updatePenaltyRuleInList(List<PenaltyRuleInput> rulesList, int position, String name, int typePosition, String pointsStr) {
+        while (rulesList.size() <= position) {
+            rulesList.add(new PenaltyRuleInput());
         }
 
-        PenaltyRuleInput rule = penaltyRules.get(position);
+        PenaltyRuleInput rule = rulesList.get(position);
         rule.setName(name);
         rule.setType(typePosition == 0 ? "flat" : "progressive");
 
@@ -503,57 +491,24 @@ public class SelectorsActivity extends AppCompatActivity {
         return sb.toString();
     }
 
-    private void saveCategory() {
-        String name = etCategoryName.getText().toString().trim();
-        String timeLimitStr = etTimeLimit.getText().toString().trim();
-        String hidesCountStr = etHidesCount.getText().toString().trim();
-        String maxScoreStr = etMaxScore.getText().toString().trim();
-
-        if (name.isEmpty()) {
-            Toast.makeText(this, "Введите название категории", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        double timeLimit;
-        int hidesCount, maxScore;
-
-        try {
-            timeLimit = Double.parseDouble(timeLimitStr);
-            hidesCount = Integer.parseInt(hidesCountStr);
-            maxScore = Integer.parseInt(maxScoreStr);
-        } catch (NumberFormatException e) {
-            Toast.makeText(this, "Проверьте числовые поля", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        List<PenaltyRuleInput> validRules = new ArrayList<>();
-        for (PenaltyRuleInput rule : penaltyRules) {
-            if (rule.getName() != null && !rule.getName().isEmpty() &&
-                    rule.getPoints() != null && !rule.getPoints().isEmpty()) {
-                validRules.add(rule);
-            }
-        }
-
-        if (validRules.isEmpty()) {
-            Toast.makeText(this, "Добавьте хотя бы одно правило штрафа", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        List<Map<String, Object>> rulesForServer = new ArrayList<>();
-        for (PenaltyRuleInput rule : validRules) {
-            Map<String, Object> ruleMap = new HashMap<>();
-            ruleMap.put("name", rule.getName());
-            ruleMap.put("type", rule.getType());
-            List<Double> doublePoints = new ArrayList<>();
-            for (int p : rule.getPoints()) {
-                doublePoints.add((double) p);
-            }
-            ruleMap.put("points", doublePoints);
-            rulesForServer.add(ruleMap);
-        }
-
+    private void saveCategory(Category existingCategory, String name, double timeLimit,
+                              int hidesCount, int maxScore, List<PenaltyRuleInput> validRules,
+                              BottomSheetDialog dialog) {
         new Thread(() -> {
-            if (currentCategory == null) {
+            List<Map<String, Object>> rulesForServer = new ArrayList<>();
+            for (PenaltyRuleInput rule : validRules) {
+                Map<String, Object> ruleMap = new HashMap<>();
+                ruleMap.put("name", rule.getName());
+                ruleMap.put("type", rule.getType());
+                List<Double> doublePoints = new ArrayList<>();
+                for (int p : rule.getPoints()) {
+                    doublePoints.add((double) p);
+                }
+                ruleMap.put("points", doublePoints);
+                rulesForServer.add(ruleMap);
+            }
+
+            if (existingCategory == null) {
                 Category newCategory = new Category();
                 newCategory.competitionId = competitionId;
                 newCategory.name = name;
@@ -578,20 +533,20 @@ public class SelectorsActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Категория создана", Toast.LENGTH_SHORT).show();
                     loadCategories();
-                    categoryFormPanel.setVisibility(View.GONE);
+                    dialog.dismiss();
                 });
             } else {
-                currentCategory.name = name;
-                currentCategory.timeLimit = timeLimit;
-                currentCategory.hidesCount = hidesCount;
-                currentCategory.maxScore = maxScore;
-                repository.updateCategory(currentCategory);
+                existingCategory.name = name;
+                existingCategory.timeLimit = timeLimit;
+                existingCategory.hidesCount = hidesCount;
+                existingCategory.maxScore = maxScore;
+                repository.updateCategory(existingCategory);
 
-                repository.deletePenaltyRulesByCategory(currentCategory.id);
+                repository.deletePenaltyRulesByCategory(existingCategory.id);
                 for (int i = 0; i < rulesForServer.size(); i++) {
                     Map<String, Object> ruleData = rulesForServer.get(i);
                     PenaltyRule rule = new PenaltyRule();
-                    rule.categoryId = currentCategory.id;
+                    rule.categoryId = existingCategory.id;
                     rule.name = (String) ruleData.get("name");
                     rule.type = (String) ruleData.get("type");
                     rule.pointsJson = new com.google.gson.Gson().toJson(ruleData.get("points"));
@@ -602,6 +557,7 @@ public class SelectorsActivity extends AppCompatActivity {
                 runOnUiThread(() -> {
                     Toast.makeText(this, "Категория обновлена", Toast.LENGTH_SHORT).show();
                     loadCategories();
+                    dialog.dismiss();
                 });
             }
         }).start();
@@ -619,7 +575,6 @@ public class SelectorsActivity extends AppCompatActivity {
                         runOnUiThread(() -> {
                             Toast.makeText(this, "Категория удалена", Toast.LENGTH_SHORT).show();
                             loadCategories();
-                            categoryFormPanel.setVisibility(View.GONE);
                         });
                     }).start();
                 })

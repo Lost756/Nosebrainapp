@@ -4,4 +4,10 @@
         <item>flat (фиксированный)</item>
         <item>progressive (прогрессивный)</item>
     </string-array>
+
+    <string-array name="gender_types">
+        <item>Не указан</item>
+        <item>Кобель</item>
+        <item>Сука</item>
+    </string-array>
 </resources>

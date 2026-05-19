@@ -70,30 +70,22 @@
                     android:padding="24dp"
                     android:textColor="?android:attr/textColorSecondary"/>
 
-                <LinearLayout
+                <Button
+                    android:id="@+id/btnAddParticipant"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="12dp">
+                    android:text="+ Добавить участника"
+                    android:layout_marginTop="12dp"
+                    style="@style/Widget.Material3.Button.TextButton"/>
 
-                    <Button
-                        android:id="@+id/btnAddParticipant"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="+ Добавить участника"
-                        android:layout_marginEnd="8dp"
-                        style="@style/Widget.Material3.Button.TextButton"/>
-
-                    <Button
-                        android:id="@+id/btnStartAttempt"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Начать попытку"
-                        android:enabled="false"
-                        style="@style/Widget.Material3.Button"/>
-                </LinearLayout>
+                <Button
+                    android:id="@+id/btnStartAttempt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Начать попытку"
+                    android:layout_marginTop="8dp"
+                    android:enabled="false"
+                    style="@style/Widget.Material3.Button"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
@@ -118,34 +110,20 @@
                     android:textStyle="bold"
                     android:layout_marginBottom="12dp"/>
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Выберите категорию для редактирования"
-                    android:textSize="14sp"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:layout_marginBottom="12dp"/>
-
-                <Spinner
-                    android:id="@+id/spinnerCategory"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="12dp" />
-
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="16dp">
+                    android:layout_marginBottom="12dp">
 
                     <Button
                         android:id="@+id/btnAddCategory"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:text="+ Новая категория"
+                        android:text="+ Создать категорию"
                         android:layout_marginEnd="8dp"
-                        style="@style/Widget.Material3.Button.TextButton"/>
+                        style="@style/Widget.Material3.Button"/>
 
                     <Button
                         android:id="@+id/btnDeleteCategory"
@@ -156,162 +134,25 @@
                         android:enabled="false"
                         style="@style/Widget.Material3.Button.TextButton"/>
                 </LinearLayout>
+
+                <Spinner
+                    android:id="@+id/spinnerCategory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="12dp" />
+
+                <TextView
+                    android:id="@+id/tvCategoryInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:textSize="14sp"
+                    android:padding="8dp"
+                    android:background="?android:attr/selectableItemBackground"
+                    android:typeface="monospace"/>
+
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
-
-        <!-- ========== ФОРМА РЕДАКТИРОВАНИЯ КАТЕГОРИИ ========== -->
-        <LinearLayout
-            android:id="@+id/categoryFormPanel"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <!-- Основные параметры -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Параметры категории"
-                        android:textSize="16sp"
-                        android:textStyle="bold"
-                        android:layout_marginBottom="16dp"/>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Название категории"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etCategoryName"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="textCapWords"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Лимит времени (секунды)"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etTimeLimit"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="numberDecimal"
-                            android:text="120"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Количество закладок"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etHidesCount"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:text="5"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-
-                    <com.google.android.material.textfield.TextInputLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:hint="Максимальный балл"
-                        style="@style/Widget.Material3.TextInputLayout.OutlinedBox">
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/etMaxScore"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:inputType="number"
-                            android:text="100"/>
-                    </com.google.android.material.textfield.TextInputLayout>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Правила штрафов -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="16dp">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Правила штрафов"
-                        android:textSize="16sp"
-                        android:textStyle="bold"/>
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="flat - фиксированный штраф, progressive - прогрессивный (каждое нарушение дороже)"
-                        android:textSize="12sp"
-                        android:textColor="?android:attr/textColorSecondary"
-                        android:layout_marginTop="4dp"
-                        android:layout_marginBottom="16dp"/>
-
-                    <LinearLayout
-                        android:id="@+id/penaltyRulesContainer"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"/>
-
-                    <Button
-                        android:id="@+id/btnAddPenaltyRule"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="+ Добавить правило штрафа"
-                        android:layout_marginTop="12dp"
-                        style="@style/Widget.Material3.Button.TextButton"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-            <!-- Кнопка сохранения -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardElevation="4dp">
-
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:padding="16dp">
-
-                    <Button
-                        android:id="@+id/btnSaveCategory"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="Сохранить категорию"
-                        android:textSize="16sp"/>
-                </LinearLayout>
-            </com.google.android.material.card.MaterialCardView>
-
-        </LinearLayout>
 
     </LinearLayout>
 </ScrollView>
