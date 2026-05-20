@@ -7,20 +7,21 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
-import com.example.nosebrainapp.data.entity.*;
+import androidx.appcompat.app.AlertDialog;
+import com.example.nosebrainapp.data.entity.Competition;
 import com.example.nosebrainapp.data.repository.CompetitionRepository;
+import com.example.nosebrainapp.sync.SyncManager;
 import com.example.nosebrainapp.utils.Constants;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.List;
-import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
     private CompetitionRepository repository;
     private Spinner spinnerCompetition;
-    private Button btnStartJudging, btnViewResults, btnCreateCompetition;
+    private Button btnStartJudging, btnViewResults, btnCreateCompetition, btnSync;
     private TextView txtNoCompetitions;
 
     private List<Competition> competitions;
@@ -58,7 +59,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnCreateCompetition.setOnClickListener(v -> showCompetitionBottomSheet());
+        btnCreateCompetition.setOnClickListener(v -> showCreateCompetitionDialog());
+
+        // В MainActivity.java обработчик кнопки синхронизации
+        btnSync.setOnClickListener(v -> {
+            if (selectedCompetitionId != -1) {
+                // Показываем прогресс
+                Toast.makeText(this, "Начинаем полную синхронизацию...", Toast.LENGTH_SHORT).show();
+
+                SyncManager syncManager = new SyncManager(this);
+                syncManager.syncAllData(selectedCompetitionId, new SyncManager.SyncCallback() {
+                    @Override
+                    public void onSuccess(String message) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(MainActivity.this, "✓ " + message, Toast.LENGTH_LONG).show();
+                        });
+                    }
+
+                    @Override
+                    public void onError(String error) {
+                        runOnUiThread(() -> {
+                            Toast.makeText(MainActivity.this, "✗ " + error, Toast.LENGTH_LONG).show();
+                        });
+                    }
+                });
+            } else {
+                Toast.makeText(this, "Сначала выберите соревнование", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     private void initViews() {
@@ -66,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         btnStartJudging = findViewById(R.id.btnStartJudging);
         btnViewResults = findViewById(R.id.btnViewResults);
         btnCreateCompetition = findViewById(R.id.btnCreateCompetition);
+        btnSync = findViewById(R.id.btnSync);
         txtNoCompetitions = findViewById(R.id.txtNoCompetitions);
 
         btnStartJudging.setEnabled(false);
@@ -123,110 +152,60 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void showCompetitionBottomSheet() {
-        BottomSheetDialog bottomSheetDialog = new BottomSheetDialog(this);
-        View sheetView = getLayoutInflater().inflate(R.layout.bottom_sheet_competition, null);
-        bottomSheetDialog.setContentView(sheetView);
+    private void showCreateCompetitionDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Создание соревнования");
 
-        TextInputEditText etName = sheetView.findViewById(R.id.etCompetitionName);
-        TextInputEditText etDescription = sheetView.findViewById(R.id.etCompetitionDescription);
-        TextInputEditText etStartDate = sheetView.findViewById(R.id.etStartDate);
-        TextInputEditText etEndDate = sheetView.findViewById(R.id.etEndDate);
-        Spinner spinnerJudge = sheetView.findViewById(R.id.spinnerJudge);
-        Spinner spinnerSecretary = sheetView.findViewById(R.id.spinnerSecretary);
-        Button btnCancel = sheetView.findViewById(R.id.btnCancelCompetition);
-        Button btnSave = sheetView.findViewById(R.id.btnSaveCompetition);
+        // Создаём кастомный layout для диалога
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(60, 40, 60, 20);
 
-        // Загружаем список пользователей для спиннеров
-        List<com.example.nosebrainapp.data.entity.User> allUsers = repository.getAllUsers();
+        // Название соревнования (обязательное поле)
+        final TextInputEditText inputName = new TextInputEditText(this);
+        inputName.setHint("Название соревнования *");
+        layout.addView(inputName);
 
-        // Фильтруем судей и секретарей
-        List<com.example.nosebrainapp.data.entity.User> judges = new ArrayList<>();
-        List<com.example.nosebrainapp.data.entity.User> secretaries = new ArrayList<>();
+        // Описание
+        final TextInputEditText inputDescription = new TextInputEditText(this);
+        inputDescription.setHint("Описание");
+        layout.addView(inputDescription);
 
-        for (com.example.nosebrainapp.data.entity.User user : allUsers) {
-            if (user.role.equals("judge") || user.role.equals("admin")) {
-                judges.add(user);
+        // Дата начала
+        final TextInputEditText inputStartDate = new TextInputEditText(this);
+        inputStartDate.setHint("Дата начала (ГГГГ-ММ-ДД)");
+        layout.addView(inputStartDate);
+
+        // Дата окончания
+        final TextInputEditText inputEndDate = new TextInputEditText(this);
+        inputEndDate.setHint("Дата окончания (ГГГГ-ММ-ДД)");
+        layout.addView(inputEndDate);
+
+        scrollView.addView(layout);
+        builder.setView(scrollView);
+
+        builder.setPositiveButton("Создать", (dialog, which) -> {
+            String name = inputName.getText().toString().trim();
+            if (!name.isEmpty()) {
+                createCompetition(
+                        name,
+                        inputDescription.getText().toString().trim(),
+                        inputStartDate.getText().toString().trim(),
+                        inputEndDate.getText().toString().trim()
+                );
+            } else {
+                Toast.makeText(MainActivity.this, "Введите название соревнования", Toast.LENGTH_SHORT).show();
             }
-            if (user.role.equals("secretary") || user.role.equals("admin")) {
-                secretaries.add(user);
-            }
-        }
-
-        // Создаем адаптеры для спиннеров
-        ArrayAdapter<com.example.nosebrainapp.data.entity.User> judgeAdapter = new ArrayAdapter<com.example.nosebrainapp.data.entity.User>(
-                this, android.R.layout.simple_spinner_item, judges) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                TextView view = (TextView) super.getView(position, convertView, parent);
-                com.example.nosebrainapp.data.entity.User user = getItem(position);
-                view.setText(user.username);
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                TextView view = (TextView) super.getDropDownView(position, convertView, parent);
-                com.example.nosebrainapp.data.entity.User user = getItem(position);
-                view.setText(user.username);
-                return view;
-            }
-        };
-        judgeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerJudge.setAdapter(judgeAdapter);
-
-        ArrayAdapter<com.example.nosebrainapp.data.entity.User> secretaryAdapter = new ArrayAdapter<com.example.nosebrainapp.data.entity.User>(
-                this, android.R.layout.simple_spinner_item, secretaries) {
-            @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                TextView view = (TextView) super.getView(position, convertView, parent);
-                com.example.nosebrainapp.data.entity.User user = getItem(position);
-                view.setText(user.username);
-                return view;
-            }
-
-            @Override
-            public View getDropDownView(int position, View convertView, ViewGroup parent) {
-                TextView view = (TextView) super.getDropDownView(position, convertView, parent);
-                com.example.nosebrainapp.data.entity.User user = getItem(position);
-                view.setText(user.username);
-                return view;
-            }
-        };
-        secretaryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerSecretary.setAdapter(secretaryAdapter);
-
-        btnCancel.setOnClickListener(v -> bottomSheetDialog.dismiss());
-
-        btnSave.setOnClickListener(v -> {
-            String name = etName.getText().toString().trim();
-            if (name.isEmpty()) {
-                Toast.makeText(this, "Введите название соревнования", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            String description = etDescription.getText().toString().trim();
-            String startDate = etStartDate.getText().toString().trim();
-            String endDate = etEndDate.getText().toString().trim();
-
-            int judgeId = -1;
-            int secretaryId = -1;
-
-            if (spinnerJudge.getSelectedItem() != null) {
-                judgeId = ((com.example.nosebrainapp.data.entity.User) spinnerJudge.getSelectedItem()).id;
-            }
-            if (spinnerSecretary.getSelectedItem() != null) {
-                secretaryId = ((com.example.nosebrainapp.data.entity.User) spinnerSecretary.getSelectedItem()).id;
-            }
-
-            createCompetition(name, description, startDate, endDate, judgeId, secretaryId, bottomSheetDialog);
         });
 
-        bottomSheetDialog.show();
+        builder.setNegativeButton("Отмена", (dialog, which) -> dialog.dismiss());
+
+        AlertDialog dialog = builder.create();
+        dialog.show();
     }
 
-    private void createCompetition(String name, String description, String startDate, String endDate,
-                                   int judgeId, int secretaryId, BottomSheetDialog dialog) {
+    private void createCompetition(String name, String description, String startDate, String endDate) {
         new Thread(() -> {
             try {
                 Competition competition = new Competition();
@@ -238,29 +217,10 @@ public class MainActivity extends AppCompatActivity {
 
                 long id = repository.insertCompetition(competition);
 
-                // Если выбран судья, обновляем его
-                if (judgeId != -1 && judgeId != 0) {
-                    com.example.nosebrainapp.data.entity.User judge = repository.getUserById(judgeId);
-                    if (judge != null) {
-                        judge.competitionId = (int) id;
-                        repository.updateUser(judge);
-                    }
-                }
-
-                // Если выбран секретарь, обновляем его
-                if (secretaryId != -1 && secretaryId != 0) {
-                    com.example.nosebrainapp.data.entity.User secretary = repository.getUserById(secretaryId);
-                    if (secretary != null) {
-                        secretary.competitionId = (int) id;
-                        repository.updateUser(secretary);
-                    }
-                }
-
                 runOnUiThread(() -> {
                     if (id > 0) {
                         Toast.makeText(MainActivity.this, "Соревнование \"" + name + "\" создано", Toast.LENGTH_SHORT).show();
                         loadCompetitions();
-                        dialog.dismiss();
                     } else {
                         Toast.makeText(MainActivity.this, "Ошибка при создании соревнования", Toast.LENGTH_SHORT).show();
                     }

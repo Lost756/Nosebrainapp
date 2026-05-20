@@ -114,5 +114,12 @@
                 style="@style/Widget.Material3.Button.TextButton"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
+    <Button
+        android:id="@+id/btnSync"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="🔄 Синхронизация с сервером"
+        android:layout_marginTop="12dp"
+        style="@style/Widget.Material3.Button.TextButton"/>
 
 </LinearLayout>
