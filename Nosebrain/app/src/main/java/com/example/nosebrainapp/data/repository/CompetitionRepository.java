@@ -171,4 +171,17 @@ public class CompetitionRepository {
     public void deleteResult(Result result) {
         db.resultDao().delete(result);
     }
+    // ==================== ПОЛЬЗОВАТЕЛИ (USER) ====================
+
+    public List<User> getAllUsers() {
+        return db.userDao().getAll();
+    }
+
+    public User getUserById(int userId) {
+        return db.userDao().getById(userId);
+    }
+
+    public void updateUser(User user) {
+        db.userDao().update(user);
+    }
 }

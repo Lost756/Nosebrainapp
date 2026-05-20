@@ -8,10 +8,11 @@ import com.example.nosebrainapp.data.entity.*;
 import com.example.nosebrainapp.data.dao.*;
 
 @Database(entities = {Competition.class, Category.class, Participant.class,
-        PenaltyRule.class, Result.class, CompetitionParticipant.class},
-        version = 3, exportSchema = false)
+        PenaltyRule.class, Result.class, CompetitionParticipant.class, User.class},
+        version = 4, exportSchema = false)
 
 public abstract class AppDatabase extends RoomDatabase {
+    public abstract UserDao userDao();
     private static volatile AppDatabase instance;
 
     public abstract CompetitionDao competitionDao();
