@@ -136,7 +136,7 @@
                     android:id="@+id/btnSync"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="🔄 Синхронизация с сервером"
+                    android:text="🔄 Отправить данные на сервер"
                     style="@style/Widget.Material3.Button.TextButton"/>
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>

@@ -6,13 +6,15 @@ import com.example.nosebrainapp.data.entity.*;
 import com.example.nosebrainapp.data.repository.CompetitionRepository;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import okhttp3.*;
 
 public class SyncManager {
     private static final String TAG = "SyncManager";
-    // Для эмулятора: 10.0.2.2, для телефона: IP компьютера
     private static final String BASE_URL = "http://192.168.0.177/nosework/api/sync.php";
 
     private OkHttpClient client;
@@ -32,6 +34,35 @@ public class SyncManager {
         void onError(String error);
     }
 
+    // Конвертация даты из формата ДД.ММ.ГГГГ в ГГГГ-ММ-ДД для сервера
+    private String convertDateToServerFormat(String date) {
+        if (date == null || date.isEmpty()) return "";
+        try {
+            // Парсим дату в формате ДД.ММ.ГГГГ
+            SimpleDateFormat inputFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+            Date parsedDate = inputFormat.parse(date);
+            // Преобразуем в формат ГГГГ-ММ-ДД для сервера
+            SimpleDateFormat outputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            return outputFormat.format(parsedDate);
+        } catch (Exception e) {
+            Log.e(TAG, "Date parsing error: " + e.getMessage());
+            return date;
+        }
+    }
+
+    // Конвертация даты из формата сервера в ДД.ММ.ГГГГ для отображения
+    private String convertDateFromServerFormat(String date) {
+        if (date == null || date.isEmpty()) return "";
+        try {
+            SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
+            Date parsedDate = inputFormat.parse(date);
+            SimpleDateFormat outputFormat = new SimpleDateFormat("dd.MM.yyyy", Locale.getDefault());
+            return outputFormat.format(parsedDate);
+        } catch (Exception e) {
+            return date;
+        }
+    }
+
     // ==================== ПОЛНАЯ СИНХРОНИЗАЦИЯ ====================
     public void syncAllData(int competitionId, SyncCallback callback) {
         new Thread(() -> {
@@ -42,34 +73,38 @@ public class SyncManager {
                     return;
                 }
 
-                // 1. Синхронизируем соревнование
+                Log.d(TAG, "Начинаем синхронизацию соревнования: " + competition.name);
+
                 int serverCompetitionId = syncCompetition(competition);
                 if (serverCompetitionId == -1) {
                     callback.onError("Ошибка синхронизации соревнования");
                     return;
                 }
+                Log.d(TAG, "Соревнование синхронизировано: mobile_id=" + competition.id + " -> server_id=" + serverCompetitionId);
 
-                // 2. Синхронизируем категории
                 List<Category> categories = repository.getCategoriesByCompetition(competitionId);
                 for (Category category : categories) {
-                    syncCategory(category, serverCompetitionId);
+                    int serverCategoryId = syncCategory(category, serverCompetitionId);
+                    Log.d(TAG, "Категория синхронизирована: mobile_id=" + category.id + " -> server_id=" + serverCategoryId);
                 }
 
-                // 3. Синхронизируем участников
                 List<Participant> participants = repository.getAllParticipants();
                 for (Participant participant : participants) {
                     int serverParticipantId = syncParticipant(participant, serverCompetitionId);
-                    if (serverParticipantId != -1) {
-                        // Сохраняем соответствие ID для результатов
-                        saveParticipantMapping(participant.id, serverParticipantId);
-                    }
+                    Log.d(TAG, "Участник синхронизирован: mobile_id=" + participant.id + " -> server_id=" + serverParticipantId);
                 }
 
-                // 4. Синхронизируем результаты
                 for (Category category : categories) {
                     List<Result> results = repository.getResultsByCategory(category.id);
+                    Log.d(TAG, "Синхронизация результатов для категории ID=" + category.id + ": " + results.size() + " результатов");
+
                     for (Result result : results) {
-                        syncResult(result, category.id, result.participantId);
+                        boolean success = syncResult(result, category.id, result.participantId);
+                        if (success) {
+                            Log.d(TAG, "Результат синхронизирован: " + result.participantName);
+                        } else {
+                            Log.e(TAG, "Ошибка синхронизации результата: " + result.participantName);
+                        }
                     }
                 }
 
@@ -88,10 +123,17 @@ public class SyncManager {
         compJson.put("mobile_id", competition.id);
         compJson.put("name", competition.name);
         compJson.put("description", competition.description != null ? competition.description : "");
-        compJson.put("start_date", competition.startDate != null ? competition.startDate : "");
-        compJson.put("end_date", competition.endDate != null ? competition.endDate : "");
+
+        // Конвертируем даты из ДД.ММ.ГГГГ в ГГГГ-ММ-ДД для сервера
+        String startDate = competition.startDate != null ? convertDateToServerFormat(competition.startDate) : "";
+        String endDate = competition.endDate != null ? convertDateToServerFormat(competition.endDate) : "";
+        compJson.put("start_date", startDate);
+        compJson.put("end_date", endDate);
+
         json.put("competition", compJson);
         json.put("action", "sync_competition");
+
+        Log.d(TAG, "Sending competition: " + json.toString());
 
         String response = sendRequest(json);
         JSONObject result = new JSONObject(response);
@@ -111,7 +153,11 @@ public class SyncManager {
         partJson.put("nickname", participant.nickname != null ? participant.nickname : "");
         partJson.put("breed", participant.breed != null ? participant.breed : "");
         partJson.put("gender", participant.gender != null ? participant.gender : "");
-        partJson.put("birth_date", participant.birthDate != null ? participant.birthDate : "");
+
+        // Конвертируем дату рождения
+        String birthDate = participant.birthDate != null ? convertDateToServerFormat(participant.birthDate) : "";
+        partJson.put("birth_date", birthDate);
+
         partJson.put("microchip_number", participant.microchipNumber != null ? participant.microchipNumber : "");
         partJson.put("pedigree_number", participant.pedigreeNumber != null ? participant.pedigreeNumber : "");
         partJson.put("qualification_book_number", participant.qualificationBookNumber != null ? participant.qualificationBookNumber : "");
@@ -119,6 +165,8 @@ public class SyncManager {
         json.put("participant", partJson);
         json.put("competition_server_id", competitionServerId);
         json.put("action", "sync_participant");
+
+        Log.d(TAG, "Sending participant: " + json.toString());
 
         String response = sendRequest(json);
         JSONObject result = new JSONObject(response);
@@ -139,7 +187,6 @@ public class SyncManager {
         catJson.put("hides_count", category.hidesCount);
         catJson.put("max_score", category.maxScore);
 
-        // Правила штрафов
         List<PenaltyRule> rules = repository.getPenaltyRulesByCategory(category.id);
         JSONArray rulesArray = new JSONArray();
         for (PenaltyRule rule : rules) {
@@ -159,6 +206,8 @@ public class SyncManager {
         json.put("competition_server_id", competitionServerId);
         json.put("action", "sync_category");
 
+        Log.d(TAG, "Sending category: " + json.toString());
+
         String response = sendRequest(json);
         JSONObject result = new JSONObject(response);
 
@@ -169,22 +218,27 @@ public class SyncManager {
     }
 
     // Синхронизация результата
-    private void syncResult(Result result, int categoryMobileId, int participantMobileId) throws Exception {
+    private boolean syncResult(Result result, int categoryMobileId, int participantMobileId) throws Exception {
         JSONObject json = new JSONObject();
         JSONObject resultJson = new JSONObject();
         resultJson.put("time", result.time);
         resultJson.put("found_items", result.foundItems);
-        resultJson.put("penalty_counts", new JSONObject(result.penaltyCountsJson));
+
+        JSONObject penaltyObj = new JSONObject(result.penaltyCountsJson);
+        resultJson.put("penalty_counts", penaltyObj);
         resultJson.put("judge_comment", result.judgeComment != null ? result.judgeComment : "");
+
         json.put("result", resultJson);
+        json.put("category_id", categoryMobileId);
+        json.put("participant_id", participantMobileId);
         json.put("action", "sync_result");
+
+        Log.d(TAG, "Sending result: category_mobile_id=" + categoryMobileId + ", participant_mobile_id=" + participantMobileId);
 
         String response = sendRequest(json);
         JSONObject res = new JSONObject(response);
 
-        if (!res.optBoolean("success", false)) {
-            throw new Exception(res.optString("error", "Unknown error"));
-        }
+        return res.optBoolean("success", false);
     }
 
     // Отправка запроса на сервер
@@ -210,9 +264,5 @@ public class SyncManager {
         }
 
         return responseBody;
-    }
-
-    // Сохранение соответствия ID для результатов
-    private void saveParticipantMapping(int mobileId, int serverId) {
     }
 }

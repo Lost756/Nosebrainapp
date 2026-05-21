@@ -169,11 +169,11 @@ public class MainActivity extends AppCompatActivity {
         layout.addView(inputDescription);
 
         final TextInputEditText inputStartDate = new TextInputEditText(this);
-        inputStartDate.setHint("Дата начала (ГГГГ-ММ-ДД)");
+        inputStartDate.setHint("Дата начала (ДД.ММ.ГГГГ)");
         layout.addView(inputStartDate);
 
         final TextInputEditText inputEndDate = new TextInputEditText(this);
-        inputEndDate.setHint("Дата окончания (ГГГГ-ММ-ДД)");
+        inputEndDate.setHint("Дата окончания (ДД.ММ.ГГГГ)");
         layout.addView(inputEndDate);
 
         scrollView.addView(layout);
@@ -205,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
                 Competition competition = new Competition();
                 competition.name = name;
                 competition.description = description.isEmpty() ? null : description;
+                // Дата уже в формате ДД.ММ.ГГГГ, оставляем как есть для конвертации в SyncManager
                 competition.startDate = startDate.isEmpty() ? null : startDate;
                 competition.endDate = endDate.isEmpty() ? null : endDate;
                 competition.isActive = true;
