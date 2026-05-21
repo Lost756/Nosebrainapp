@@ -15,4 +15,4 @@ Nosebrain Judge - это мобильное приложение для Android,
 3)Локальная база данных:Room (SQLite)
 4)UI компоненты:Material Design Components, ConstraintLayout, RecyclerView
 
-Для сборки и запуска проекта вам понадобится Android Studio.
+Для сборки и запуска проекта вам понадобится Android Studio, загрузить сервер nosework, дистрибутив XAMPP для локального запуска
