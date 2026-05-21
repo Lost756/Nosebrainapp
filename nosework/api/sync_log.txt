@@ -1,0 +1,711 @@
+2026-05-21 15:31:04 - INPUT: Array
+(
+    [competition] => Array
+        (
+            [mobile_id] => 2
+            [name] => Mobile test
+            [description] => netu
+            [start_date] => 2026.01.01
+            [end_date] => 2026.12.12
+        )
+
+    [action] => sync_competition
+)
+
+2026-05-21 15:31:05 - INPUT: Array
+(
+    [category] => Array
+        (
+            [mobile_id] => 2
+            [name] => kategoria
+            [time_limit] => 30
+            [hides_count] => 3
+            [max_score] => 100
+            [penalty_rules] => Array
+                (
+                )
+
+        )
+
+    [competition_server_id] => 19
+    [action] => sync_category
+)
+
+2026-05-21 15:31:05 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 2
+            [name] => Name
+            [nickname] => Klichka
+            [breed] => poroda
+            [gender] => Кобель
+            [birth_date] => 2000.01.01
+            [microchip_number] => 4
+            [pedigree_number] => 2
+            [qualification_book_number] => 3
+            [instructor_name] => instruktor
+        )
+
+    [competition_server_id] => 19
+    [action] => sync_participant
+)
+
+2026-05-21 15:31:05 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 1
+            [name] => PC участник
+            [nickname] => не важно
+            [breed] => обычный
+            [gender] => 
+            [birth_date] => 
+            [microchip_number] => 
+            [pedigree_number] => 
+            [qualification_book_number] => 
+            [instructor_name] => 
+        )
+
+    [competition_server_id] => 19
+    [action] => sync_participant
+)
+
+2026-05-21 15:31:05 - INPUT: Array
+(
+    [result] => Array
+        (
+            [time] => 0.965
+            [found_items] => 3
+            [penalty_counts] => Array
+                (
+                )
+
+            [judge_comment] => comentariy
+        )
+
+    [category_id] => 2
+    [participant_id] => 2
+    [action] => sync_result
+)
+
+2026-05-21 15:31:05 - handleSyncResult: category_mobile=2, participant_mobile=2
+2026-05-21 15:31:05 - Found server IDs: category=19, participant=30
+2026-05-21 15:31:05 - Result already exists: ID 7
+2026-05-21 15:39:54 - INPUT: Array
+(
+    [competition] => Array
+        (
+            [mobile_id] => 1
+            [name] => Mobile
+            [description] => Test Sync
+            [start_date] => 2026.01.01
+            [end_date] => 2026.01.09
+        )
+
+    [action] => sync_competition
+)
+
+2026-05-21 15:39:55 - INPUT: Array
+(
+    [category] => Array
+        (
+            [mobile_id] => 1
+            [name] => Kategoria
+            [time_limit] => 60
+            [hides_count] => 3
+            [max_score] => 100
+            [penalty_rules] => Array
+                (
+                )
+
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_category
+)
+
+2026-05-21 15:39:55 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 1
+            [name] => Name
+            [nickname] => Klichka
+            [breed] => Poroda
+            [gender] => 
+            [birth_date] => 2000.01.01
+            [microchip_number] => 1
+            [pedigree_number] => 2
+            [qualification_book_number] => 3
+            [instructor_name] => 4
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_participant
+)
+
+2026-05-21 15:39:55 - INPUT: Array
+(
+    [result] => Array
+        (
+            [time] => 3.036
+            [found_items] => 3
+            [penalty_counts] => Array
+                (
+                )
+
+            [judge_comment] => 
+        )
+
+    [category_id] => 1
+    [participant_id] => 1
+    [action] => sync_result
+)
+
+2026-05-21 15:39:55 - handleSyncResult: category_mobile=1, participant_mobile=1
+2026-05-21 15:39:55 - Found server IDs: category=3, participant=2
+2026-05-21 15:39:55 - Result saved! ID: 1
+2026-05-21 15:40:24 - INPUT: Array
+(
+    [competition] => Array
+        (
+            [mobile_id] => 1
+            [name] => Mobile
+            [description] => Test Sync
+            [start_date] => 2026.01.01
+            [end_date] => 2026.01.09
+        )
+
+    [action] => sync_competition
+)
+
+2026-05-21 15:40:24 - INPUT: Array
+(
+    [category] => Array
+        (
+            [mobile_id] => 1
+            [name] => Kategoria
+            [time_limit] => 60
+            [hides_count] => 3
+            [max_score] => 100
+            [penalty_rules] => Array
+                (
+                )
+
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_category
+)
+
+2026-05-21 15:40:24 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 1
+            [name] => Name
+            [nickname] => Klichka
+            [breed] => Poroda
+            [gender] => 
+            [birth_date] => 2000.01.01
+            [microchip_number] => 1
+            [pedigree_number] => 2
+            [qualification_book_number] => 3
+            [instructor_name] => 4
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_participant
+)
+
+2026-05-21 15:40:24 - INPUT: Array
+(
+    [result] => Array
+        (
+            [time] => 3.036
+            [found_items] => 3
+            [penalty_counts] => Array
+                (
+                )
+
+            [judge_comment] => 
+        )
+
+    [category_id] => 1
+    [participant_id] => 1
+    [action] => sync_result
+)
+
+2026-05-21 15:40:24 - handleSyncResult: category_mobile=1, participant_mobile=1
+2026-05-21 15:40:24 - Found server IDs: category=3, participant=2
+2026-05-21 15:40:24 - Result already exists: ID 1
+2026-05-21 15:41:19 - INPUT: Array
+(
+    [competition] => Array
+        (
+            [mobile_id] => 1
+            [name] => Mobile
+            [description] => Test Sync
+            [start_date] => 2026.01.01
+            [end_date] => 2026.01.09
+        )
+
+    [action] => sync_competition
+)
+
+2026-05-21 15:41:20 - INPUT: Array
+(
+    [category] => Array
+        (
+            [mobile_id] => 1
+            [name] => Kategoria
+            [time_limit] => 60
+            [hides_count] => 3
+            [max_score] => 100
+            [penalty_rules] => Array
+                (
+                )
+
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_category
+)
+
+2026-05-21 15:41:20 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 1
+            [name] => Name
+            [nickname] => Klichka
+            [breed] => Poroda
+            [gender] => 
+            [birth_date] => 2000.01.01
+            [microchip_number] => 1
+            [pedigree_number] => 2
+            [qualification_book_number] => 3
+            [instructor_name] => 4
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_participant
+)
+
+2026-05-21 15:41:20 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 2
+            [name] => PC участник
+            [nickname] => не важно
+            [breed] => обычный
+            [gender] => 
+            [birth_date] => 
+            [microchip_number] => 
+            [pedigree_number] => 
+            [qualification_book_number] => 
+            [instructor_name] => 
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_participant
+)
+
+2026-05-21 15:41:20 - INPUT: Array
+(
+    [result] => Array
+        (
+            [time] => 3.036
+            [found_items] => 3
+            [penalty_counts] => Array
+                (
+                )
+
+            [judge_comment] => 
+        )
+
+    [category_id] => 1
+    [participant_id] => 1
+    [action] => sync_result
+)
+
+2026-05-21 15:41:20 - handleSyncResult: category_mobile=1, participant_mobile=1
+2026-05-21 15:41:20 - Found server IDs: category=3, participant=2
+2026-05-21 15:41:20 - Result already exists: ID 1
+2026-05-21 15:42:19 - INPUT: Array
+(
+    [competition] => Array
+        (
+            [mobile_id] => 1
+            [name] => Mobile
+            [description] => Test Sync
+            [start_date] => 2026.01.01
+            [end_date] => 2026.01.09
+        )
+
+    [action] => sync_competition
+)
+
+2026-05-21 15:42:19 - INPUT: Array
+(
+    [category] => Array
+        (
+            [mobile_id] => 1
+            [name] => Kategoria
+            [time_limit] => 60
+            [hides_count] => 3
+            [max_score] => 100
+            [penalty_rules] => Array
+                (
+                )
+
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_category
+)
+
+2026-05-21 15:42:19 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 1
+            [name] => Name
+            [nickname] => Klichka
+            [breed] => Poroda
+            [gender] => 
+            [birth_date] => 2000.01.01
+            [microchip_number] => 1
+            [pedigree_number] => 2
+            [qualification_book_number] => 3
+            [instructor_name] => 4
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_participant
+)
+
+2026-05-21 15:42:19 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 2
+            [name] => PC участник
+            [nickname] => не важно
+            [breed] => обычный
+            [gender] => 
+            [birth_date] => 
+            [microchip_number] => 
+            [pedigree_number] => 
+            [qualification_book_number] => 
+            [instructor_name] => 
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_participant
+)
+
+2026-05-21 15:42:19 - INPUT: Array
+(
+    [result] => Array
+        (
+            [time] => 3.036
+            [found_items] => 3
+            [penalty_counts] => Array
+                (
+                )
+
+            [judge_comment] => 
+        )
+
+    [category_id] => 1
+    [participant_id] => 1
+    [action] => sync_result
+)
+
+2026-05-21 15:42:19 - handleSyncResult: category_mobile=1, participant_mobile=1
+2026-05-21 15:42:19 - Found server IDs: category=3, participant=2
+2026-05-21 15:42:19 - Result already exists: ID 1
+2026-05-21 15:43:21 - INPUT: Array
+(
+    [competition] => Array
+        (
+            [mobile_id] => 2
+            [name] => PC
+            [description] => Тест синхронизации
+            [start_date] => 2026-01-01
+            [end_date] => 2026-12-12
+        )
+
+    [action] => sync_competition
+)
+
+2026-05-21 15:43:21 - INPUT: Array
+(
+    [category] => Array
+        (
+            [mobile_id] => 2
+            [name] => тест категории
+            [time_limit] => 60
+            [hides_count] => 3
+            [max_score] => 100
+            [penalty_rules] => Array
+                (
+                )
+
+        )
+
+    [competition_server_id] => 4
+    [action] => sync_category
+)
+
+2026-05-21 15:43:21 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 1
+            [name] => Name
+            [nickname] => Klichka
+            [breed] => Poroda
+            [gender] => 
+            [birth_date] => 2000.01.01
+            [microchip_number] => 1
+            [pedigree_number] => 2
+            [qualification_book_number] => 3
+            [instructor_name] => 4
+        )
+
+    [competition_server_id] => 4
+    [action] => sync_participant
+)
+
+2026-05-21 15:43:21 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 2
+            [name] => PC участник
+            [nickname] => не важно
+            [breed] => обычный
+            [gender] => 
+            [birth_date] => 
+            [microchip_number] => 
+            [pedigree_number] => 
+            [qualification_book_number] => 
+            [instructor_name] => 
+        )
+
+    [competition_server_id] => 4
+    [action] => sync_participant
+)
+
+2026-05-21 15:43:21 - INPUT: Array
+(
+    [result] => Array
+        (
+            [time] => 1.985
+            [found_items] => 3
+            [penalty_counts] => Array
+                (
+                )
+
+            [judge_comment] => 
+        )
+
+    [category_id] => 2
+    [participant_id] => 2
+    [action] => sync_result
+)
+
+2026-05-21 15:43:21 - handleSyncResult: category_mobile=2, participant_mobile=2
+2026-05-21 15:43:21 - Found server IDs: category=4, participant=3
+2026-05-21 15:43:21 - Result saved! ID: 2
+2026-05-21 15:53:35 - INPUT: Array
+(
+    [competition] => Array
+        (
+            [mobile_id] => 1
+            [name] => Mobile
+            [description] => Test Sync
+            [start_date] => 2026.01.01
+            [end_date] => 2026.01.09
+        )
+
+    [action] => sync_competition
+)
+
+2026-05-21 15:53:36 - INPUT: Array
+(
+    [category] => Array
+        (
+            [mobile_id] => 1
+            [name] => Kategoria
+            [time_limit] => 60
+            [hides_count] => 3
+            [max_score] => 100
+            [penalty_rules] => Array
+                (
+                )
+
+        )
+
+    [competition_server_id] => 2
+    [action] => sync_category
+)
+
+2026-05-21 15:53:36 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 1
+            [name] => Name
+            [nickname] => Klichka
+            [breed] => Poroda
+            [gender] => 
+            [birth_date] => 2000.01.01
+            [microchip_number] => 1
+            [pedigree_number] => 2
+            [qualification_book_number] => 3
+            [instructor_name] => 4
+        )
+
+    [competition_server_id] => 2
+    [action] => sync_participant
+)
+
+2026-05-21 15:53:36 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 2
+            [name] => PC участник
+            [nickname] => не важно
+            [breed] => обычный
+            [gender] => 
+            [birth_date] => 
+            [microchip_number] => 
+            [pedigree_number] => 
+            [qualification_book_number] => 
+            [instructor_name] => 
+        )
+
+    [competition_server_id] => 2
+    [action] => sync_participant
+)
+
+2026-05-21 15:53:36 - INPUT: Array
+(
+    [result] => Array
+        (
+            [time] => 3.036
+            [found_items] => 3
+            [penalty_counts] => Array
+                (
+                )
+
+            [judge_comment] => 
+        )
+
+    [category_id] => 1
+    [participant_id] => 1
+    [action] => sync_result
+)
+
+2026-05-21 15:53:36 - handleSyncResult: category_mobile=1, participant_mobile=1
+2026-05-21 15:53:36 - Found server IDs: category=2, participant=1
+2026-05-21 15:53:36 - Result saved! ID: 1
+2026-05-21 15:53:58 - INPUT: Array
+(
+    [competition] => Array
+        (
+            [mobile_id] => 1
+            [name] => Mobile
+            [description] => Test Sync
+            [start_date] => 2026.01.01
+            [end_date] => 2026.01.09
+        )
+
+    [action] => sync_competition
+)
+
+2026-05-21 15:53:59 - INPUT: Array
+(
+    [category] => Array
+        (
+            [mobile_id] => 1
+            [name] => Kategoria
+            [time_limit] => 60
+            [hides_count] => 3
+            [max_score] => 100
+            [penalty_rules] => Array
+                (
+                )
+
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_category
+)
+
+2026-05-21 15:53:59 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 1
+            [name] => Name
+            [nickname] => Klichka
+            [breed] => Poroda
+            [gender] => 
+            [birth_date] => 2000.01.01
+            [microchip_number] => 1
+            [pedigree_number] => 2
+            [qualification_book_number] => 3
+            [instructor_name] => 4
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_participant
+)
+
+2026-05-21 15:53:59 - INPUT: Array
+(
+    [participant] => Array
+        (
+            [mobile_id] => 2
+            [name] => PC участник
+            [nickname] => не важно
+            [breed] => обычный
+            [gender] => 
+            [birth_date] => 
+            [microchip_number] => 
+            [pedigree_number] => 
+            [qualification_book_number] => 
+            [instructor_name] => 
+        )
+
+    [competition_server_id] => 3
+    [action] => sync_participant
+)
+
+2026-05-21 15:53:59 - INPUT: Array
+(
+    [result] => Array
+        (
+            [time] => 3.036
+            [found_items] => 3
+            [penalty_counts] => Array
+                (
+                )
+
+            [judge_comment] => 
+        )
+
+    [category_id] => 1
+    [participant_id] => 1
+    [action] => sync_result
+)
+
+2026-05-21 15:53:59 - handleSyncResult: category_mobile=1, participant_mobile=1
+2026-05-21 15:53:59 - Found server IDs: category=2, participant=1
