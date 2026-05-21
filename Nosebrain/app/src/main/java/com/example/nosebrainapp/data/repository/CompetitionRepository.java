@@ -3,6 +3,10 @@ package com.example.nosebrainapp.data.repository;
 import android.content.Context;
 import com.example.nosebrainapp.data.AppDatabase;
 import com.example.nosebrainapp.data.entity.*;
+import com.google.gson.Gson;
+import org.json.JSONArray;
+import org.json.JSONObject;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CompetitionRepository {
@@ -183,5 +187,102 @@ public class CompetitionRepository {
 
     public void updateUser(User user) {
         db.userDao().update(user);
+    }
+
+    // Проверка существования соревнования по имени
+    public boolean competitionExists(String name) {
+        List<Competition> all = db.competitionDao().getAll();
+        for (Competition c : all) {
+            if (c.name.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Проверка существования участника по имени
+    public boolean participantExists(String name) {
+        List<Participant> all = db.participantDao().getAll();
+        for (Participant p : all) {
+            if (p.name.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Проверка существования категории по имени
+    public boolean categoryExists(String name, int competitionId) {
+        List<Category> categories = db.categoryDao().getByCompetition(competitionId);
+        for (Category c : categories) {
+            if (c.name.equals(name)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    // Импорт соревнования с сервера
+    public long importCompetition(JSONObject compData) throws Exception {
+        Competition competition = new Competition();
+        competition.name = compData.getString("name");
+        competition.description = compData.optString("description", "");
+        competition.startDate = compData.optString("start_date", null);
+        competition.endDate = compData.optString("end_date", null);
+        competition.isActive = true;
+
+        return insertCompetition(competition);
+    }
+
+    // Импорт участника с сервера
+    public long importParticipant(JSONObject partData) throws Exception {
+        Participant participant = new Participant();
+        participant.name = partData.getString("name");
+        participant.nickname = partData.optString("nickname", null);
+        participant.breed = partData.optString("breed", null);
+        participant.gender = partData.optString("gender", null);
+        participant.birthDate = partData.optString("birth_date", null);
+        participant.microchipNumber = partData.optString("microchip_number", null);
+        participant.pedigreeNumber = partData.optString("pedigree_number", null);
+        participant.qualificationBookNumber = partData.optString("qualification_book_number", null);
+        participant.instructorName = partData.optString("instructor_name", null);
+
+        return insertParticipant(participant);
+    }
+
+    // Импорт категории с сервера
+    public long importCategory(JSONObject catData, int competitionId) throws Exception {
+        Category category = new Category();
+        category.competitionId = competitionId;
+        category.name = catData.getString("name");
+        category.timeLimit = catData.getDouble("time_limit");
+        category.hidesCount = catData.getInt("hides_count");
+        category.maxScore = catData.getInt("max_score");
+        category.sortOrder = 0;
+
+        long categoryId = insertCategory(category);
+
+        // Импорт правил штрафов
+        JSONArray rulesArray = catData.optJSONArray("penalty_rules");
+        if (rulesArray != null) {
+            for (int i = 0; i < rulesArray.length(); i++) {
+                JSONObject ruleData = rulesArray.getJSONObject(i);
+                PenaltyRule rule = new PenaltyRule();
+                rule.categoryId = (int) categoryId;
+                rule.name = ruleData.getString("name");
+                rule.type = ruleData.getString("type");
+
+                JSONArray pointsArray = ruleData.getJSONArray("points");
+                List<Double> points = new ArrayList<>();
+                for (int j = 0; j < pointsArray.length(); j++) {
+                    points.add(pointsArray.getDouble(j));
+                }
+                rule.pointsJson = new Gson().toJson(points);
+                rule.sequenceIndex = i + 1;
+                insertPenaltyRule(rule);
+            }
+        }
+
+        return categoryId;
     }
 }

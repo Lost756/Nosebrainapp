@@ -1,125 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:padding="24dp"
-    android:gravity="center"
     android:background="?android:attr/colorBackground">
 
-    <ImageView
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:src="@drawable/ic_timer"
-        android:layout_marginBottom="24dp"/>
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nosework Judge"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:layout_marginBottom="32dp"
-        android:textColor="?android:attr/textColorPrimary"/>
-
-    <!-- Выбор соревнования -->
-    <com.google.android.material.card.MaterialCardView
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardElevation="4dp">
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center">
 
-        <LinearLayout
+        <ImageView
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:src="@drawable/ic_timer"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nosework Judge"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="32dp"
+            android:textColor="?android:attr/textColorPrimary"/>
+
+        <!-- Выбор соревнования -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="16dp"
+            app:cardElevation="4dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Выберите соревнование"
-                android:textSize="16sp"
-                android:textStyle="bold"
-                android:textColor="?android:attr/textColorPrimary"
-                android:layout_marginBottom="12dp"/>
-
-            <Spinner
-                android:id="@+id/spinnerCompetition"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content" />
-
-            <TextView
-                android:id="@+id/txtNoCompetitions"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Нет соревнований\n\nНажмите кнопку ниже, чтобы создать"
-                android:textAlignment="center"
-                android:visibility="gone"
-                android:padding="24dp"
-                android:textColor="?android:attr/textColorSecondary"/>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-    <!-- Кнопки действий -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="16dp"
-        app:cardElevation="4dp">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Выберите соревнование"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="?android:attr/textColorPrimary"
+                    android:layout_marginBottom="12dp"/>
 
-        <LinearLayout
+                <Spinner
+                    android:id="@+id/spinnerCompetition"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+
+                <TextView
+                    android:id="@+id/txtNoCompetitions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Нет соревнований\n\nНажмите кнопку ниже, чтобы создать"
+                    android:textAlignment="center"
+                    android:visibility="gone"
+                    android:padding="24dp"
+                    android:textColor="?android:attr/textColorSecondary"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Кнопки действий -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="16dp"
+            app:cardElevation="4dp">
 
-            <Button
-                android:id="@+id/btnStartJudging"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Начать судейство"
-                android:enabled="false"
-                android:layout_marginBottom="12dp"
-                style="@style/Widget.Material3.Button"/>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <Button
-                android:id="@+id/btnViewResults"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Просмотр результатов"
-                android:enabled="false"
-                style="@style/Widget.Material3.Button.TextButton"/>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
+                <Button
+                    android:id="@+id/btnStartJudging"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Начать судейство"
+                    android:enabled="false"
+                    android:layout_marginBottom="12dp"
+                    style="@style/Widget.Material3.Button"/>
 
-    <!-- Кнопка создания соревнования -->
-    <com.google.android.material.card.MaterialCardView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:cardElevation="4dp">
+                <Button
+                    android:id="@+id/btnViewResults"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Просмотр результатов"
+                    android:enabled="false"
+                    style="@style/Widget.Material3.Button.TextButton"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
 
-        <LinearLayout
+        <!-- Кнопка создания соревнования -->
+        <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginBottom="16dp"
+            app:cardElevation="4dp">
 
-            <Button
-                android:id="@+id/btnCreateCompetition"
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="+ Создать новое соревнование"
-                style="@style/Widget.Material3.Button.TextButton"/>
-        </LinearLayout>
-    </com.google.android.material.card.MaterialCardView>
-    <Button
-        android:id="@+id/btnSync"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="🔄 Синхронизация с сервером"
-        android:layout_marginTop="12dp"
-        style="@style/Widget.Material3.Button.TextButton"/>
+                android:orientation="vertical"
+                android:padding="16dp">
 
-</LinearLayout>
+                <Button
+                    android:id="@+id/btnCreateCompetition"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="+ Создать новое соревнование"
+                    style="@style/Widget.Material3.Button.TextButton"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Кнопка синхронизации (отправка на сервер) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <Button
+                    android:id="@+id/btnSync"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="🔄 Синхронизация с сервером"
+                    style="@style/Widget.Material3.Button.TextButton"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Кнопка получения данных с сервера -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            app:cardElevation="4dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="1dp">
+
+                <Button
+                    android:id="@+id/btnDownloadFromServer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="📥 Получить данные с сервера"
+                    style="@style/Widget.Material3.Button.TextButton"/>
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>
