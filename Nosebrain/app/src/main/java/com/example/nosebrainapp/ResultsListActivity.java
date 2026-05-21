@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.nosebrainapp.data.entity.*;
 import com.example.nosebrainapp.data.repository.CompetitionRepository;
+import com.example.nosebrainapp.utils.Constants;
 import java.util.*;
 
 public class ResultsListActivity extends AppCompatActivity {
@@ -17,10 +18,14 @@ public class ResultsListActivity extends AppCompatActivity {
     private Spinner spinnerCategory;
     private RecyclerView recyclerView;
     private TextView txtNoResults;
+    private TextView txtCompetitionName;
 
     private List<Category> categories;
     private List<Result> currentResults = new ArrayList<>();
     private ResultsAdapter adapter;
+
+    private int competitionId;
+    private String competitionName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,14 +34,18 @@ public class ResultsListActivity extends AppCompatActivity {
 
         repository = new CompetitionRepository(this);
 
-        spinnerCategory = findViewById(R.id.spinnerCategoryResults);
-        recyclerView = findViewById(R.id.recyclerViewResults);
-        txtNoResults = findViewById(R.id.txtNoResults);
+        // Получаем ID соревнования из Intent
+        competitionId = getIntent().getIntExtra(Constants.EXTRA_COMPETITION_ID, -1);
+        competitionName = getIntent().getStringExtra(Constants.EXTRA_COMPETITION_NAME);
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new ResultsAdapter();
-        recyclerView.setAdapter(adapter);
+        if (competitionId == -1) {
+            Toast.makeText(this, "Ошибка: соревнование не выбрано", Toast.LENGTH_SHORT).show();
+            finish();
+            return;
+        }
 
+        initViews();
+        setTitle("Результаты - " + competitionName);
         loadCategories();
 
         spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -51,22 +60,64 @@ public class ResultsListActivity extends AppCompatActivity {
         });
     }
 
+    private void initViews() {
+        spinnerCategory = findViewById(R.id.spinnerCategoryResults);
+        recyclerView = findViewById(R.id.recyclerViewResults);
+        txtNoResults = findViewById(R.id.txtNoResults);
+        txtCompetitionName = findViewById(R.id.txtCompetitionName);
+
+        if (txtCompetitionName != null) {
+            txtCompetitionName.setText("Соревнование: " + competitionName);
+        }
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        adapter = new ResultsAdapter();
+        recyclerView.setAdapter(adapter);
+    }
+
     private void loadCategories() {
-        List<Competition> competitions = repository.getCompetitions();
-        if (!competitions.isEmpty()) {
-            categories = repository.getCategoriesByCompetition(competitions.get(0).id);
-            ArrayAdapter<Category> adapter = new ArrayAdapter<>(this,
-                    android.R.layout.simple_spinner_item, categories);
+        // Загружаем категории для конкретного соревнования
+        categories = repository.getCategoriesByCompetition(competitionId);
+
+        if (categories == null || categories.isEmpty()) {
+            spinnerCategory.setVisibility(View.GONE);
+            txtNoResults.setVisibility(View.VISIBLE);
+            txtNoResults.setText("Нет категорий в этом соревновании");
+        } else {
+            spinnerCategory.setVisibility(View.VISIBLE);
+
+            ArrayAdapter<Category> adapter = new ArrayAdapter<Category>(this,
+                    android.R.layout.simple_spinner_item, categories) {
+                @Override
+                public View getView(int position, View convertView, ViewGroup parent) {
+                    TextView view = (TextView) super.getView(position, convertView, parent);
+                    view.setText(categories.get(position).name);
+                    return view;
+                }
+
+                @Override
+                public View getDropDownView(int position, View convertView, ViewGroup parent) {
+                    TextView view = (TextView) super.getDropDownView(position, convertView, parent);
+                    view.setText(categories.get(position).name);
+                    return view;
+                }
+            };
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
             spinnerCategory.setAdapter(adapter);
+
+            // Автоматически загружаем результаты первой категории
+            if (!categories.isEmpty()) {
+                loadResults(categories.get(0).id);
+            }
         }
     }
 
     private void loadResults(int categoryId) {
         currentResults = repository.getResultsByCategory(categoryId);
-        if (currentResults.isEmpty()) {
+        if (currentResults == null || currentResults.isEmpty()) {
             recyclerView.setVisibility(View.GONE);
             txtNoResults.setVisibility(View.VISIBLE);
+            txtNoResults.setText("Нет результатов в этой категории");
         } else {
             recyclerView.setVisibility(View.VISIBLE);
             txtNoResults.setVisibility(View.GONE);

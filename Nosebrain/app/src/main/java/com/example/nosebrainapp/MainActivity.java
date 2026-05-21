@@ -40,9 +40,9 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         loadCompetitions();
 
-        btnStartJudging.setOnClickListener(v -> {
+        btnViewResults.setOnClickListener(v -> {
             if (selectedCompetitionId != -1) {
-                Intent intent = new Intent(MainActivity.this, SelectorsActivity.class);
+                Intent intent = new Intent(MainActivity.this, ResultsListActivity.class);
                 intent.putExtra(Constants.EXTRA_COMPETITION_ID, selectedCompetitionId);
                 intent.putExtra(Constants.EXTRA_COMPETITION_NAME, selectedCompetitionName);
                 startActivity(intent);

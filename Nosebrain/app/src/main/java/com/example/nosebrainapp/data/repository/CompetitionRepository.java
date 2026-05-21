@@ -55,7 +55,6 @@ public class CompetitionRepository {
             db.competitionDao().delete(competition);
         }
     }
-
     // ==================== КАТЕГОРИИ (CATEGORY) ====================
 
     public List<Category> getCategoriesByCompetition(int competitionId) {
