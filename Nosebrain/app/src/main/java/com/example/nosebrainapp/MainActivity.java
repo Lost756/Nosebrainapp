@@ -40,11 +40,15 @@ public class MainActivity extends AppCompatActivity {
         initViews();
         loadCompetitions();
 
-        btnViewResults.setOnClickListener(v -> {
+        // ========== КНОПКА НАЧАТЬ СУДЕЙСТВО ==========
+        btnStartJudging.setOnClickListener(v -> {
+            Log.d(TAG, "btnStartJudging clicked, selectedCompetitionId: " + selectedCompetitionId);
+
             if (selectedCompetitionId != -1) {
-                Intent intent = new Intent(MainActivity.this, ResultsListActivity.class);
+                Intent intent = new Intent(MainActivity.this, SelectorsActivity.class);
                 intent.putExtra(Constants.EXTRA_COMPETITION_ID, selectedCompetitionId);
                 intent.putExtra(Constants.EXTRA_COMPETITION_NAME, selectedCompetitionName);
+                Log.d(TAG, "Starting SelectorsActivity with ID: " + selectedCompetitionId);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Выберите соревнование", Toast.LENGTH_SHORT).show();
@@ -55,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
             if (selectedCompetitionId != -1) {
                 Intent intent = new Intent(MainActivity.this, ResultsListActivity.class);
                 intent.putExtra(Constants.EXTRA_COMPETITION_ID, selectedCompetitionId);
+                intent.putExtra(Constants.EXTRA_COMPETITION_NAME, selectedCompetitionName);
                 startActivity(intent);
             } else {
                 Toast.makeText(this, "Выберите соревнование", Toast.LENGTH_SHORT).show();
@@ -108,6 +113,7 @@ public class MainActivity extends AppCompatActivity {
             txtNoCompetitions.setVisibility(View.VISIBLE);
             btnStartJudging.setEnabled(false);
             btnViewResults.setEnabled(false);
+            Log.d(TAG, "No competitions found");
         } else {
             spinnerCompetition.setVisibility(View.VISIBLE);
             txtNoCompetitions.setVisibility(View.GONE);
@@ -139,6 +145,7 @@ public class MainActivity extends AppCompatActivity {
                         selectedCompetitionName = competitions.get(position).name;
                         btnStartJudging.setEnabled(true);
                         btnViewResults.setEnabled(true);
+                        Log.d(TAG, "Competition selected: ID=" + selectedCompetitionId + ", Name=" + selectedCompetitionName);
                     }
                 }
 
@@ -205,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
                 Competition competition = new Competition();
                 competition.name = name;
                 competition.description = description.isEmpty() ? null : description;
-                // Дата уже в формате ДД.ММ.ГГГГ, оставляем как есть для конвертации в SyncManager
                 competition.startDate = startDate.isEmpty() ? null : startDate;
                 competition.endDate = endDate.isEmpty() ? null : endDate;
                 competition.isActive = true;
@@ -237,7 +243,6 @@ public class MainActivity extends AppCompatActivity {
         downloadManager.fetchAllData(new SyncDownloadManager.DownloadCallback() {
             @Override
             public void onSuccess(SyncDownloadManager.ServerData data) {
-                // Уже в UI потоке, так как mainHandler.post используется
                 loadingDialog.dismiss();
                 if (data.competitions.isEmpty() && data.categories.isEmpty() && data.participants.isEmpty()) {
                     Toast.makeText(MainActivity.this, "Нет данных на сервере", Toast.LENGTH_LONG).show();
@@ -248,7 +253,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onError(String error) {
-                // Уже в UI потоке
                 loadingDialog.dismiss();
                 Toast.makeText(MainActivity.this, "Ошибка: " + error, Toast.LENGTH_LONG).show();
                 Log.e(TAG, "Download error: " + error);
@@ -278,7 +282,6 @@ public class MainActivity extends AppCompatActivity {
         List<CheckBox> categoryCheckboxes = new ArrayList<>();
         List<CheckBox> participantCheckboxes = new ArrayList<>();
 
-        // Заполняем соревнования
         for (int i = 0; i < data.competitions.size(); i++) {
             SyncDownloadManager.CompetitionData cd = data.competitions.get(i);
             CheckBox cb = new CheckBox(this);
@@ -302,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
             competitionCheckboxes.add(cb);
         }
 
-        // Заполняем категории
         for (int i = 0; i < data.categories.size(); i++) {
             SyncDownloadManager.CategoryData cd = data.categories.get(i);
             CheckBox cb = new CheckBox(this);
@@ -326,7 +328,6 @@ public class MainActivity extends AppCompatActivity {
             categoryCheckboxes.add(cb);
         }
 
-        // Заполняем участников
         for (int i = 0; i < data.participants.size(); i++) {
             SyncDownloadManager.ParticipantData pd = data.participants.get(i);
             CheckBox cb = new CheckBox(this);

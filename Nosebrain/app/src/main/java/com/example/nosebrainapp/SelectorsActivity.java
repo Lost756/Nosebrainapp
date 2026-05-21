@@ -2,6 +2,7 @@ package com.example.nosebrainapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
@@ -16,6 +17,7 @@ import java.util.*;
 
 public class SelectorsActivity extends AppCompatActivity {
 
+    private static final String TAG = "SelectorsActivity";
     private CompetitionRepository repository;
     private int competitionId;
     private String competitionName;
@@ -46,6 +48,9 @@ public class SelectorsActivity extends AppCompatActivity {
         competitionId = getIntent().getIntExtra(Constants.EXTRA_COMPETITION_ID, -1);
         competitionName = getIntent().getStringExtra(Constants.EXTRA_COMPETITION_NAME);
 
+        Log.d(TAG, "onCreate - competitionId: " + competitionId);
+        Log.d(TAG, "onCreate - competitionName: " + competitionName);
+
         if (competitionId == -1) {
             Toast.makeText(this, "Ошибка: соревнование не выбрано", Toast.LENGTH_SHORT).show();
             finish();
@@ -56,7 +61,10 @@ public class SelectorsActivity extends AppCompatActivity {
         loadParticipants();
         loadCategories();
 
-        btnStartAttempt.setOnClickListener(v -> startJudging());
+        btnStartAttempt.setOnClickListener(v -> {
+            Log.d(TAG, "btnStartAttempt clicked, selectedParticipantId: " + selectedParticipantId);
+            startJudging();
+        });
         btnAddParticipant.setOnClickListener(v -> showParticipantBottomSheet());
         btnAddCategory.setOnClickListener(v -> showCategoryBottomSheet(null));
         btnDeleteCategory.setOnClickListener(v -> deleteCategory());
@@ -88,6 +96,7 @@ public class SelectorsActivity extends AppCompatActivity {
 
     private void loadParticipants() {
         participants = repository.getAllParticipants();
+        Log.d(TAG, "loadParticipants - participants count: " + (participants != null ? participants.size() : 0));
 
         if (participants == null || participants.isEmpty()) {
             spinnerParticipant.setVisibility(View.GONE);
@@ -133,6 +142,7 @@ public class SelectorsActivity extends AppCompatActivity {
                         selectedParticipantId = participants.get(position).id;
                         selectedParticipantName = participants.get(position).name;
                         btnStartAttempt.setEnabled(true);
+                        Log.d(TAG, "Participant selected: ID=" + selectedParticipantId + ", Name=" + selectedParticipantName);
                     }
                 }
 
@@ -229,6 +239,13 @@ public class SelectorsActivity extends AppCompatActivity {
     }
 
     private void startJudging() {
+        Log.d(TAG, "startJudging called - selectedParticipantId: " + selectedParticipantId);
+
+        if (selectedParticipantId == -1) {
+            Toast.makeText(this, "Сначала выберите участника", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (categories == null || categories.isEmpty()) {
             Toast.makeText(this, "Сначала создайте категорию", Toast.LENGTH_SHORT).show();
             return;
@@ -243,6 +260,8 @@ public class SelectorsActivity extends AppCompatActivity {
                 .setTitle("Выберите категорию")
                 .setItems(categoryNames, (dialog, which) -> {
                     Category selectedCategory = categories.get(which);
+                    Log.d(TAG, "Category selected: ID=" + selectedCategory.id + ", Name=" + selectedCategory.name);
+
                     Intent intent = new Intent(SelectorsActivity.this, JudgeActivity.class);
                     intent.putExtra(Constants.EXTRA_CATEGORY_ID, selectedCategory.id);
                     intent.putExtra(Constants.EXTRA_PARTICIPANT_ID, selectedParticipantId);
@@ -256,6 +275,7 @@ public class SelectorsActivity extends AppCompatActivity {
 
     private void loadCategories() {
         categories = repository.getCategoriesByCompetition(competitionId);
+        Log.d(TAG, "loadCategories - categories count: " + (categories != null ? categories.size() : 0));
 
         if (categories == null || categories.isEmpty()) {
             spinnerCategory.setVisibility(View.GONE);
